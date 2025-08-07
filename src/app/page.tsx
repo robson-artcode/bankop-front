@@ -66,7 +66,7 @@ export default function Home() {
 
       localStorage.setItem("toast", JSON.stringify({
         title: "Login realizado com sucesso",
-        description: "Bem-vindo ao painel!",
+        description: "Bem-vindo ao painel da BankOp!",
         status: "success"
       }))
 
