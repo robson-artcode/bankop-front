@@ -1,2 +1,18 @@
-/* @import "tailwindcss/preflight"; */
-/* @import "tailwindcss/utilities"; */
+/* Aplica transições suaves para propriedades comuns afetadas pelo tema */
+:root, html, [class*="chakra-theme"], .chakra-theme, .chakra-theme * {
+  transition: background-color 0.2s ease-in-out, 
+              color 0.2s ease-in-out, 
+              border-color 0.2s ease-in-out, 
+              box-shadow 0.2s ease-in-out;
+}
+
+/* Garante que o body e elementos comuns tenham transição */
+body {
+  transition: background-color 0.2s ease-in-out, 
+              color 0.2s ease-in-out;
+}
+
+/* Desativa transições em elementos específicos, se necessário */
+[data-chakra-no-transition] {
+  transition: none !important;
+}

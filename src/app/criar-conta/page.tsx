@@ -5,6 +5,7 @@ import { Input, Button, ButtonGroup, Heading } from "@chakra-ui/react"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useRouter } from 'next/navigation'
 import { PasswordInput } from "@/components/ui/password-input"
+import { ThemeToggle } from "../components/ThemeToggle"
 import styles from "../page.module.css"
 
 export default function Home() {
@@ -91,6 +92,7 @@ export default function Home() {
         </ol>
       </main>
       <Toaster />
+      <ThemeToggle />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Provider } from "@/components/ui/provider"
+import { ColorModeProvider } from "@/components/ui/color-mode";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
-        <Provider>{children}</Provider>
+        <ColorModeProvider>
+          <Provider>
+            {children}
+          </Provider>
+        </ColorModeProvider>
       </body>
     </html>
   );

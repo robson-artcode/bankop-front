@@ -5,6 +5,7 @@ import { Heading } from "@chakra-ui/react"
 import { useRouter } from "next/navigation";
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "../components/ThemeToggle"
 
 export default function Home() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function Home() {
     <div className={styles.page} style={{ maxWidth: "950px", margin: "0 auto"}}>
       <Heading size="2xl" style={{ margin: "30px auto", textAlign: "center"}}>EM CONSTRUÇÃO</Heading>
       <Toaster />
+      <ThemeToggle />
     </div>
   )
 }

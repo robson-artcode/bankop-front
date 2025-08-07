@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { PasswordInput } from "@/components/ui/password-input"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useEffect, useState, FormEvent } from "react";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 export default function Home() {
   const router = useRouter()
@@ -151,6 +152,7 @@ export default function Home() {
       </main>
 
       <Toaster />
+      <ThemeToggle />
     </div>
   )
 }
