@@ -6,13 +6,22 @@ import { Input, Button, ButtonGroup, Heading } from "@chakra-ui/react"
 import { useRouter } from 'next/navigation'
 import { PasswordInput } from "@/components/ui/password-input"
 import { Toaster, toaster } from "@/components/ui/toaster"
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 
 export default function Home() {
   const router = useRouter()
-
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      router.push("/painel");
+    } else {
+      setIsAuthorized(false); 
+    }
+  }, []);
 
   useEffect(() => {
     const toastRaw = localStorage.getItem("toast")
@@ -27,7 +36,9 @@ export default function Home() {
     }
   }, [])
 
-  const handleLogin = async () => {
+  const handleLogin = async (e?: FormEvent) => {
+    e?.preventDefault();
+    
     try {
       const res = await fetch("http://localhost:3333/auth/login", {
         method: "POST",
@@ -50,7 +61,6 @@ export default function Home() {
       }
 
       const data = await res.json()
-
       localStorage.setItem("access_token", data.access_token)
 
       localStorage.setItem("toast", JSON.stringify({
@@ -71,8 +81,12 @@ export default function Home() {
     }
   }
 
+  if (isAuthorized === null) return null;
+
   return (
     <div className={styles.page} style={{ maxWidth: "950px", margin: "0 auto"}}>
+      
+      <form onSubmit={handleLogin} style={{ display: "contents" }}>
       <main className={styles.main}>
         <Image
           className={styles.logo}
@@ -82,18 +96,20 @@ export default function Home() {
           height={60}
           priority
         />
-        <ol>
+          <ol className={styles.loginForm}>
           <li>
             <Input
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+                className={styles.inputField}
             />
             <PasswordInput
               placeholder="Senha"
-              style={{ margin: "15px auto" }}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+                className={styles.inputField}
+                style={{ margin: "15px auto" }}
             />
           </li>
           <li>
@@ -102,6 +118,7 @@ export default function Home() {
                 style={{ width: "100%" }}
                 colorPalette="blue"
                 onClick={handleLogin}
+                  type="submit"
               >
                 ENTRAR
               </Button>
@@ -109,6 +126,7 @@ export default function Home() {
           </li>
         </ol>
       </main>
+      </form>
 
       <main className={styles.main}>
         <ol>

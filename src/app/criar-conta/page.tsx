@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input, Button, ButtonGroup, Heading } from "@chakra-ui/react"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useRouter } from 'next/navigation'
@@ -8,10 +8,21 @@ import { PasswordInput } from "@/components/ui/password-input"
 import styles from "../page.module.css"
 
 export default function Home() {
+  
+  const router = useRouter()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const router = useRouter()
+
+  useEffect(() => {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        router.push("/painel");
+      } else {
+        setIsAuthorized(false); 
+      }
+    }, []);
 
   const handleSubmit = async () => {
     try {
@@ -41,6 +52,8 @@ export default function Home() {
         })
     }
   }
+
+  if (isAuthorized === null) return null;
 
   return (
     <div className={styles.page} style={{ maxWidth: "500px", margin: "0 auto" }}>
