@@ -1,24 +1,25 @@
 'use client'
 
-import { useState } from 'react'
 import { FormatNumber, Input, Field, Text } from '@chakra-ui/react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setOpCoinsToConvert } from '../store/conversionSlice'
+import { RootState } from '../store'
 
 interface RealTimeCurrencyConverterProps {
-  disableInput?: boolean // Adicione esta linha
-  // ... outras props se existirem
+  disableInput?: boolean
 }
 
 export function RealTimeCurrencyConverter({ disableInput = false }: RealTimeCurrencyConverterProps) {
-  const [inputValue, setInputValue] = useState('')
-  const CONVERSION_RATE = 5 // 5 OpCoins = 1 Real
+  const dispatch = useDispatch()
+  const opCoins = useSelector((state: RootState) => state.conversion.opCoinsToConvert)
+  const CONVERSION_RATE = 5 
 
-  const convertedValue = Number(inputValue) / CONVERSION_RATE
+  const convertedValue = opCoins / CONVERSION_RATE
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    // Permite apenas números e um ponto decimal
     if (/^\d*\.?\d*$/.test(value)) {
-      setInputValue(value)
+      dispatch(setOpCoinsToConvert(Number(value)))
     }
   }
 
@@ -29,9 +30,9 @@ export function RealTimeCurrencyConverter({ disableInput = false }: RealTimeCurr
           OpCoins <Field.RequiredIndicator />
         </Field.Label>
         <Input
-            disabled={disableInput}
+          disabled={disableInput}
           placeholder="Quantidade de OpCoins"
-          value={inputValue}
+          value={opCoins || ''}
           onChange={handleInputChange}
           type="text"
           inputMode="decimal"

@@ -10,6 +10,9 @@ import { ThemeToggle } from "../components/ThemeToggle"
 import { OpCoinConvert } from "../components/OpCoinConvert";
 import Image from "next/image";
 import { ConversionModalContent } from "../components/ConversionModalContent";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from '../store'
+import { setBrlCoins, setOpCoins, setOpCoinsToConvert } from "../store/conversionSlice";
 
 interface Wallet {
   id: string;
@@ -22,10 +25,13 @@ interface Wallet {
 
 export default function Home() {
   const router = useRouter();
+  const dispatch = useDispatch()
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [loading, setLoading] = useState(true);
   const [convertLoading, setConvertLoading] = useState(false);
+  const opCoins = useSelector((state: RootState) => state.conversion.opCoins)
+  const brlCoins = useSelector((state: RootState) => state.conversion.brlCoins)
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -79,7 +85,15 @@ export default function Home() {
       }
 
       const data = await response.json();
+      const opCoins = data.find((state: any) => state.coin.symbol === "OPCOIN");
+      const brlCoins = data.find((state: any) => state.coin.symbol === "BRL");
+
+      dispatch(setOpCoinsToConvert(0));
+      dispatch(setOpCoins(opCoins.balance));
+      dispatch(setBrlCoins(brlCoins.balance));
+
       setWallets(data);
+      
     } catch (error) {
       toaster.create({
         title: "Erro",
@@ -92,15 +106,6 @@ export default function Home() {
       setLoading(false);
     }
   };
-
-  const handleConvert = () => {
-    setConvertLoading(true) // Ativa o loading
-    
-    // Simula um processo assíncrono (substitua por sua chamada real)
-    setTimeout(() => {
-      setConvertLoading(false) // Desativa o loading após conclusão
-    }, 2000)
-  }
 
 
   if (isAuthorized === null) return null;
@@ -159,8 +164,8 @@ export default function Home() {
                         <Text textStyle="md">Saldo</Text>
                         <Text textStyle="2xl">
                           {wallet.coin.symbol === 'BRL' ?
-                            <FormatNumber value={wallet.balance} style="currency" currency="BRL" /> : 
-                            <span>OPC <FormatNumber value={wallet.balance}/></span>
+                            <FormatNumber value={brlCoins} style="currency" currency="BRL" /> : 
+                            <span>OPC <FormatNumber value={opCoins}/></span>
                           }
                         </Text>
                       </div>
@@ -230,12 +235,15 @@ export default function Home() {
               </Card.Header>
               <Card.Body>
                 <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-                  <Card.Root 
+                  <Card.Root
+                    cursor={"pointer"} 
                     onClick={() => {
                       OpCoinConvert.open("a", {
                         title: "Conversão de Pontos",
                         description: "Faça a conversão dos seus pontos agora mesmo. A cada 5 pontos, você receberá 1 real.",
-                        content: (<ConversionModalContent/>)
+                        content: (
+                            <ConversionModalContent onClose={() => OpCoinConvert.close("a")} />
+                        )
                       })
                     }}
                   >
