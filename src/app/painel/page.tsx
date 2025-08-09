@@ -1,7 +1,7 @@
 'use client'
 
 import styles from "../page.module.css";
-import { Grid, GridItem, Text, Skeleton, FormatNumber, Tabs, Card, Heading, Timeline, Icon } from "@chakra-ui/react"
+import { Grid, GridItem, Text, Skeleton, FormatNumber, Tabs, Card, Heading, Timeline, Icon, Box } from "@chakra-ui/react"
 import { LuCheck, LuPackage, LuShip, LuArrowRightLeft, LuCircleArrowRight } from "react-icons/lu"
 import { useRouter } from "next/navigation";
 import { Toaster, toaster } from "@/components/ui/toaster"
@@ -13,7 +13,7 @@ import { ConversionModalContent } from "../components/ConversionModalContent";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from '../store'
 import { setBrlCoins, setOpCoins, setOpCoinsToConvert } from "../store/conversionSlice";
-
+import { setTransactions } from "../store/transactionSlice";
 interface Wallet {
   id: string;
   balance: number;
@@ -22,6 +22,37 @@ interface Wallet {
     name: string;
   };
 }
+
+interface transactionType {
+    id: string
+    fromCoinId: string,
+    toCoinId: string,
+    amountFrom: number
+    amountTo: number
+    createdAt: Date
+}
+
+const formatCustomDate = (dateInput: Date): string => {
+    const date = new Date(dateInput);
+  
+    if (isNaN(date.getTime())) {
+      return 'Data inválida';
+    }
+
+    const formatoData = new Intl.DateTimeFormat('pt-BR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(date);
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const period = hours >= 12 ? 'pm' : 'am';
+    const hours12 = hours % 12 || 12;
+
+    return `${formatoData}, ${hours12}:${minutes}${period}`;
+};
+
 
 export default function Home() {
   const router = useRouter();
@@ -32,17 +63,40 @@ export default function Home() {
   const [convertLoading, setConvertLoading] = useState(false);
   const opCoins = useSelector((state: RootState) => state.conversion.opCoins)
   const brlCoins = useSelector((state: RootState) => state.conversion.brlCoins)
-
+  const transactions: transactionType[] = useSelector((state: RootState) => state.transaction.transactions)
+  
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const fetchData = async () => {
+      const token = localStorage.getItem("access_token");
+      
+      if (!token) {
+        router.push("/");
+        return;
+      }
 
-    if (!token) {
-      router.push("/");
-    } else {
       setIsAuthorized(true);
-      fetchWallets(token);
-    }
-  }, []);
+      setLoading(true);
+
+      try {
+        await Promise.all([
+          fetchWallets(token),
+          fetchTransactions(token)
+        ]);
+      } catch (error) {
+        toaster.create({
+          title: "Erro",
+          description: "Falha ao carregar dados",
+          type: "error",
+          duration: 5000,
+          closable: true
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [router]);
 
   useEffect(() => {
     const toastRaw = localStorage.getItem('toast');
@@ -62,7 +116,6 @@ export default function Home() {
 
   useEffect(() => {
   if (convertLoading) {
-      // Lógica de conversão aqui
       setTimeout(() => {
         setConvertLoading(false)
       }, 2000)
@@ -71,7 +124,7 @@ export default function Home() {
 
   const fetchWallets = async (token: string) => {
     try {
-      setLoading(true);
+      
       const response = await fetch('http://localhost:3333/wallets', {
         method: 'GET',
         headers: {
@@ -85,6 +138,7 @@ export default function Home() {
       }
 
       const data = await response.json();
+      console.log(data)
       const opCoins = data.find((state: any) => state.coin.symbol === "OPCOIN");
       const brlCoins = data.find((state: any) => state.coin.symbol === "BRL");
 
@@ -102,12 +156,39 @@ export default function Home() {
         duration: 5000,
         closable: true
       });
-    } finally {
-      setLoading(false);
     }
   };
 
+  const fetchTransactions = async (token: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3333/transactions', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
+      if (!response.ok) {
+        throw new Error('Falha ao carregar os saldos');
+      }
+
+      const data = await response.json();
+   
+      dispatch(setTransactions(data))
+      
+    } catch (error) {
+      toaster.create({
+        title: "Erro",
+        description: "Falha ao carregar as transações",
+        type: "error",
+        duration: 5000,
+        closable: true
+      });
+    }
+  };
+  
   if (isAuthorized === null) return null;
 
   return (
@@ -180,50 +261,61 @@ export default function Home() {
                 <Heading size="lg">Últimas transações</Heading>
               </Card.Header>
               <Card.Body>
-                <Timeline.Root maxW="400px">
-                  <Timeline.Item>
-                    <Timeline.Connector>
-                      <Timeline.Separator />
-                      <Timeline.Indicator>
-                        <LuShip />
-                      </Timeline.Indicator>
-                    </Timeline.Connector>
-                    <Timeline.Content>
-                      <Timeline.Title>Product Shipped</Timeline.Title>
-                      <Timeline.Description>13th May 2021</Timeline.Description>
-                      <Text textStyle="sm">
-                        We shipped your product via <strong>FedEx</strong> and it should
-                        arrive within 3-5 business days.
+                <Box 
+                  maxW="400px"
+                  maxH="300px"
+                  overflowY="auto"
+                  css={{
+                    '&::-webkit-scrollbar': {
+                      width: '4px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      width: '6px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: '#3182CE',
+                      borderRadius: '24px',
+                    },
+                  }}
+                >
+                  <Timeline.Root maxW="400px">
+                    {loading ? ( 
+                      <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+                        {[...Array(4)].map((_, index) => (
+                          <GridItem key={index}>
+                            <Skeleton height="20px" mb="4" />
+                            <Skeleton height="20px" width="80%" />
+                          </GridItem>
+                        ))}
+                      </Grid>
+                    ) : transactions.length > 0 ? ( 
+                      transactions.map((transaction) => (
+                        <Timeline.Item key={transaction.id}>
+                          <Timeline.Connector>
+                            <Timeline.Separator />
+                            <Timeline.Indicator>
+                              <LuArrowRightLeft />
+                            </Timeline.Indicator>
+                          </Timeline.Connector>
+                          <Timeline.Content>
+                            <Timeline.Title>Conversão</Timeline.Title>
+                            <Timeline.Description>
+                              {formatCustomDate(new Date(transaction.createdAt))}
+                            </Timeline.Description>
+                            <Text textStyle="sm">
+                              Conversão de <strong>{transaction.amountFrom} OP</strong> para{' '}
+                              <strong>{transaction.amountTo} BRL</strong>
+                            </Text>
+                          </Timeline.Content>
+                        </Timeline.Item>
+                      ))
+                    ) : ( 
+                      <Text textAlign="center" mt={8}>
+                        Nenhuma transação encontrada
                       </Text>
-                    </Timeline.Content>
-                  </Timeline.Item>
-
-                  <Timeline.Item>
-                    <Timeline.Connector>
-                      <Timeline.Separator />
-                      <Timeline.Indicator>
-                        <LuCheck />
-                      </Timeline.Indicator>
-                    </Timeline.Connector>
-                    <Timeline.Content>
-                      <Timeline.Title textStyle="sm">Order Confirmed</Timeline.Title>
-                      <Timeline.Description>18th May 2021</Timeline.Description>
-                    </Timeline.Content>
-                  </Timeline.Item>
-
-                  <Timeline.Item>
-                    <Timeline.Connector>
-                      <Timeline.Separator />
-                      <Timeline.Indicator>
-                        <LuPackage />
-                      </Timeline.Indicator>
-                    </Timeline.Connector>
-                    <Timeline.Content>
-                      <Timeline.Title textStyle="sm">Order Delivered</Timeline.Title>
-                      <Timeline.Description>20th May 2021, 10:30am</Timeline.Description>
-                    </Timeline.Content>
-                  </Timeline.Item>
-                </Timeline.Root>
+                    )}
+                  </Timeline.Root>
+                </Box>
               </Card.Body>
             </Card.Root>
           </Grid>

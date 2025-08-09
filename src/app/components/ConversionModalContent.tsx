@@ -7,6 +7,7 @@ import { Toaster, toaster } from "@/components/ui/toaster"
 import { RealTimeCurrencyConverter } from './RealTimeCurrencyConverter'
 import { useDispatch, useSelector } from 'react-redux'
 import { setBrlCoins, setOpCoins } from '../store/conversionSlice'
+import { setTransactions } from '../store/transactionSlice'
 import { RootState } from '../store'
 
 interface ConversionModalContentProps {
@@ -40,10 +41,9 @@ export function ConversionModalContent({ onClose }: ConversionModalContentProps)
 
       const data = await res.json()
 
-      dispatch(
-        setOpCoins(data.updatedOpCoinBalance),
-        setBrlCoins(data.updatedBRLCoinBalance)
-      )
+      dispatch(setOpCoins(data.updatedOpCoinBalance),)
+      dispatch(setBrlCoins(data.updatedBRLCoinBalance))
+      dispatch(setTransactions(data.newTransaction))
 
       toaster.create({
         title: "Conversão realizada",
