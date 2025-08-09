@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from '../store'
 import { setBrlCoins, setOpCoins, setOpCoinsToConvert } from "../store/conversionSlice";
 import { setTransactions } from "../store/transactionSlice";
+import { Logout } from "../components/Logout";
 
 interface Wallet {
   id: string;
@@ -431,6 +432,7 @@ export default function Home() {
 
       <Toaster />
       <ThemeToggle />
+      <Logout />
       <OpCoinConvert.Viewport />
     </div>
   );
