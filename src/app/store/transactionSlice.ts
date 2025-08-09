@@ -1,11 +1,30 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+interface transactionTypeObject {
+  id: string
+  type: string
+  description: string
+}
+interface transactionCoinObject {
+  id: string
+  symbol: string
+  name: string
+}
+interface transactionUserObject {
+  id: string
+  email: string
+  name: string
+}
 interface transactionType {
     id: string
-    fromCoinId: string,
-    toCoinId: string,
+    fromCoin: transactionCoinObject
+    toCoin: transactionCoinObject
     amountFrom: number
     amountTo: number
+    userId: string
+    userFrom: transactionUserObject
+    userTo: transactionUserObject
+    type: transactionTypeObject
     createdAt: Date
 }
 
@@ -21,8 +40,11 @@ const transactionSlice = createSlice({
   name: 'transaction',
   initialState,
   reducers: {
-    setTransactions(state, action: PayloadAction<transactionType[]>) {
+    setNewTransactions(state, action: PayloadAction<transactionType[]>) {
       state.transactions = [...action.payload, ...state.transactions];
+    },
+    setTransactions(state, action: PayloadAction<transactionType[]>) {
+      state.transactions = action.payload;
     },
     resetTransactions(state) {
       state.transactions = []
@@ -31,6 +53,7 @@ const transactionSlice = createSlice({
 })
 
 export const { 
+  setNewTransactions,
   setTransactions,
   resetTransactions
 } = transactionSlice.actions

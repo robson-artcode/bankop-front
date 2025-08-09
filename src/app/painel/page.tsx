@@ -10,10 +10,12 @@ import { ThemeToggle } from "../components/ThemeToggle"
 import { OpCoinConvert } from "../components/OpCoinConvert";
 import Image from "next/image";
 import { ConversionModalContent } from "../components/ConversionModalContent";
+import { TransferModalContent } from "../components/TransferModelContent";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from '../store'
 import { setBrlCoins, setOpCoins, setOpCoinsToConvert } from "../store/conversionSlice";
 import { setTransactions } from "../store/transactionSlice";
+
 interface Wallet {
   id: string;
   balance: number;
@@ -23,12 +25,31 @@ interface Wallet {
   };
 }
 
+interface transactionTypeObject {
+  id: string
+  type: string
+  description: string
+}
+interface transactionCoinObject {
+  id: string
+  symbol: string
+  name: string
+}
+interface transactionUserObject {
+  id: string
+  email: string
+  name: string
+}
 interface transactionType {
     id: string
-    fromCoinId: string,
-    toCoinId: string,
+    fromCoin: transactionCoinObject
+    toCoin: transactionCoinObject
     amountFrom: number
     amountTo: number
+    userId: string
+    userFrom: transactionUserObject
+    userTo: transactionUserObject
+    type: transactionTypeObject
     createdAt: Date
 }
 
@@ -294,17 +315,44 @@ export default function Home() {
                           <Timeline.Connector>
                             <Timeline.Separator />
                             <Timeline.Indicator>
-                              <LuArrowRightLeft />
+                              {transaction.type.type === "CONVERT" ? (
+                                <LuArrowRightLeft />
+                              ) : null}
+                              {transaction.type.type === "TRANSFER" ? (
+                                <LuCircleArrowRight />
+                              ) : null}
                             </Timeline.Indicator>
                           </Timeline.Connector>
                           <Timeline.Content>
-                            <Timeline.Title>Conversão</Timeline.Title>
+                            <Timeline.Title>{transaction.type.description} </Timeline.Title>
                             <Timeline.Description>
                               {formatCustomDate(new Date(transaction.createdAt))}
                             </Timeline.Description>
                             <Text textStyle="sm">
-                              Conversão de <strong>{transaction.amountFrom} OP</strong> para{' '}
-                              <strong>{transaction.amountTo} BRL</strong>
+                              {transaction.type.type === "CONVERT" ? (
+                                <>
+                                  {transaction.type.description} de {' '}<strong> {transaction.amountFrom} {transaction.fromCoin.symbol}
+                                  </strong> para <strong>{transaction.amountTo} {transaction.toCoin.symbol}</strong>
+                                </>
+                              ) : null}
+                              {(transaction.type.type === "TRANSFER" && transaction.userId === transaction.userFrom.id) ? (
+                                <>
+                                  Você fez uma transferência de {' '}
+                                  <strong>
+                                    {transaction.amountFrom} {transaction.fromCoin.symbol}
+                                  </strong>{' '}
+                                  para <strong>{transaction.userTo.email}</strong>
+                                </>
+                              ) : null}
+                              {(transaction.type.type === "TRANSFER" && transaction.userId !== transaction.userFrom.id) ? (
+                                <>
+                                  Você recebeu uma transferência de {' '}
+                                  <strong>
+                                    {transaction.amountTo} {transaction.toCoin.symbol}
+                                  </strong>{' '}
+                                  de <strong>{transaction.userFrom.email}</strong>
+                                </>
+                              ) : null}
                             </Text>
                           </Timeline.Content>
                         </Timeline.Item>
@@ -349,7 +397,30 @@ export default function Home() {
                     </Card.Body>
                     <Card.Footer>Converta seus pontos em Reais</Card.Footer>
                   </Card.Root>
+                  <Card.Root
+                    cursor={"pointer"} 
+                    onClick={() => {
+                      OpCoinConvert.open("a", {
+                        title: "Transferência",
+                        description: "Escolha a moeda que deseja transferir, sua quantidade, e-mail do usuário e realize a transferência",
+                        content: (
+                            <TransferModalContent onClose={() => OpCoinConvert.close("a")} />
+                        )
+                      })
+                    }}
+                  >
+                    <Card.Header>
+                      <Icon size="xl">
+                        <LuCircleArrowRight/>
+                      </Icon>
+                    </Card.Header>
+                    <Card.Body>
+                      <Heading size="md">Transferências</Heading>
+                    </Card.Body>
+                    <Card.Footer>Faça transferências de pontos ou reais para outros usuários</Card.Footer>
+                  </Card.Root>
                 </Grid>
+                  
               </Card.Body>
             </Card.Root>
           </Grid>
