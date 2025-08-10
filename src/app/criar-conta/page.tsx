@@ -8,7 +8,7 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { ThemeToggle } from "../../components/ThemeToggle"
 import styles from "../page.module.css"
 
-const API_URL = process.env.API_URL as string;
+const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 
 export default function RegisterPage() {
   const router = useRouter()
