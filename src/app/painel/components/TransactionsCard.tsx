@@ -7,28 +7,39 @@ import { Transaction } from "../types";
 import { formatCustomDate } from "../../utils/date";
 
 interface TransactionsCardProps {
-  isLoading: boolean;
-  transactions: Transaction[];
+  isLoading: boolean; // Indica se os dados estão sendo carregados
+  transactions: Transaction[]; // Lista de transações a serem exibidas
 }
 
+/**
+ * Componente que exibe um card com o histórico de transações do usuário
+ * 
+ * @param isLoading - Estado de carregamento
+ * @param transactions - Array de transações
+ * @returns JSX.Element
+ */
 export const TransactionsCard = ({ isLoading, transactions }: TransactionsCardProps) => (
   <Card.Root>
     <Card.Header>
       <Heading size="lg">Últimas transações</Heading>
     </Card.Header>
     <Card.Body>
+      {/* Container com scroll personalizado */}
       <Box
-        maxH="300px"
-        overflowY="auto"
+        maxH="300px" // Altura máxima antes de aparecer scroll
+        overflowY="auto" // Habilita scroll vertical
         css={{
-          "&::-webkit-scrollbar": { width: "4px" },
-          "&::-webkit-scrollbar-track": { width: "6px" },
-          "&::-webkit-scrollbar-thumb": { background: "#3182CE", borderRadius: "24px" },
+          "&::-webkit-scrollbar": { width: "4px" }, // Largura da barra de scroll
+          "&::-webkit-scrollbar-track": { width: "6px" }, // Track do scroll
+          "&::-webkit-scrollbar-thumb": { 
+            background: "#3182CE", // Cor do thumb
+            borderRadius: "24px" // Borda arredondada
+          },
         }}
       >
         <Timeline.Root>
           {isLoading ? (
-            <LoadingSkeleton />
+            <LoadingSkeleton /> // Exibe esqueleto durante carregamento
           ) : transactions.length > 0 ? (
             transactions.map((transaction) => (
               <TransactionItem key={transaction.id} transaction={transaction} />
@@ -44,22 +55,34 @@ export const TransactionsCard = ({ isLoading, transactions }: TransactionsCardPr
   </Card.Root>
 );
 
+/**
+ * Componente de esqueleto para loading
+ * 
+ * @returns JSX.Element
+ */
 const LoadingSkeleton = () => (
   <Grid templateColumns="repeat(2, 1fr)" gap={6}>
     {[...Array(4)].map((_, idx) => (
       <GridItem key={idx}>
-        <Skeleton height="20px" mb="4" />
-        <Skeleton height="20px" width="80%" />
+        <Skeleton height="20px" mb="4" /> {/* Linha 1 do esqueleto */}
+        <Skeleton height="20px" width="80%" /> {/* Linha 2 do esqueleto */}
       </GridItem>
     ))}
   </Grid>
 );
 
+/**
+ * Componente que renderiza um item individual da timeline
+ * 
+ * @param transaction - Dados da transação
+ * @returns JSX.Element
+ */
 const TransactionItem = ({ transaction }: { transaction: Transaction }) => (
   <Timeline.Item key={transaction.id}>
     <Timeline.Connector>
       <Timeline.Separator />
       <Timeline.Indicator>
+        {/* Ícone condicional baseado no tipo de transação */}
         {transaction.type.type === "CONVERT" ? <LuArrowRightLeft /> : null}
         {transaction.type.type === "TRANSFER" ? <LuCircleArrowRight /> : null}
       </Timeline.Indicator>
@@ -67,16 +90,23 @@ const TransactionItem = ({ transaction }: { transaction: Transaction }) => (
     <Timeline.Content>
       <Timeline.Title>{transaction.type.description}</Timeline.Title>
       <Timeline.Description>
-        {formatCustomDate(new Date(transaction.createdAt))}
+        {formatCustomDate(new Date(transaction.createdAt))} {/* Data formatada */}
       </Timeline.Description>
       <Text textStyle="sm">
-        {renderTransactionDescription(transaction)}
+        {renderTransactionDescription(transaction)} {/* Descrição dinâmica */}
       </Text>
     </Timeline.Content>
   </Timeline.Item>
 );
 
+/**
+ * Renderiza a descrição da transação baseada no tipo
+ * 
+ * @param transaction - Dados da transação
+ * @returns JSX.Element | null
+ */
 const renderTransactionDescription = (transaction: Transaction) => {
+  // Transação de conversão
   if (transaction.type.type === "CONVERT") {
     return (
       <>
@@ -89,8 +119,10 @@ const renderTransactionDescription = (transaction: Transaction) => {
     );
   }
 
+  // Transação de transferência
   if (transaction.type.type === "TRANSFER") {
     return transaction.userId === transaction.userFrom.id ? (
+      // Transferência enviada
       <>
         Você fez uma transferência de{" "}
         <strong>
@@ -99,6 +131,7 @@ const renderTransactionDescription = (transaction: Transaction) => {
         para <strong>{transaction.userTo.email}</strong>
       </>
     ) : (
+      // Transferência recebida
       <>
         Você recebeu uma transferência de{" "}
         <strong>

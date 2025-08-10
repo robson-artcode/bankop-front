@@ -3,7 +3,7 @@ import "./globals.css";
 import { AppProviders } from "./providers";
 
 export const metadata: Metadata = {
-  title: "BankOp - Your Bank of Operations & Points",
+  title: "BankOp - Seu banco de Operações e Pontos",
   description: "Gerenciamento financeiro",
   icons: {
     icon: "/favicon.ico",

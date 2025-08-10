@@ -6,13 +6,22 @@ import { OverlayManager } from "./modal/OverlayManager";
 import { ConversionModal } from "./modal/ConversionModal";
 import { TransferModal } from "./modal/TransferModel";
 
+/**
+ * Componente que exibe os produtos/serviços disponíveis como cards clicáveis
+ * 
+ * @returns JSX.Element
+ */
 export const ProductsCard = () => (
   <Card.Root>
     <Card.Header>
       <Heading size="lg">Nossos Produtos</Heading>
     </Card.Header>
+    
     <Card.Body>
+      {/* Grid responsivo - 1 coluna no mobile, 3 no desktop */}
       <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
+        
+        {/* Card de Conversão de Pontos */}
         <Card.Root
           cursor="pointer"
           onClick={() =>
@@ -25,7 +34,7 @@ export const ProductsCard = () => (
         >
           <Card.Header>
             <Icon size="xl">
-              <LuArrowRightLeft />
+              <LuArrowRightLeft /> {/* Ícone ilustrativo */}
             </Icon>
           </Card.Header>
           <Card.Body>
@@ -34,6 +43,7 @@ export const ProductsCard = () => (
           <Card.Footer>Converta seus pontos em Reais</Card.Footer>
         </Card.Root>
 
+        {/* Card de Transferências */}
         <Card.Root
           cursor="pointer"
           onClick={() =>
@@ -46,7 +56,7 @@ export const ProductsCard = () => (
         >
           <Card.Header>
             <Icon size="xl">
-              <LuCircleArrowRight />
+              <LuCircleArrowRight /> {/* Ícone ilustrativo */}
             </Icon>
           </Card.Header>
           <Card.Body>
@@ -54,6 +64,8 @@ export const ProductsCard = () => (
           </Card.Body>
           <Card.Footer>Faça transferências de pontos ou reais para outros usuários</Card.Footer>
         </Card.Root>
+
+        {/* Espaço reservado para terceiro card (se necessário) */}
       </Grid>
     </Card.Body>
   </Card.Root>

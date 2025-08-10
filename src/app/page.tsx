@@ -11,28 +11,29 @@ import { LogoHeader } from './components/LogoHeader'
 import styles from './page.module.css'
 
 interface FormState {
-  email: string
-  password: string
-  emailError: string
-  passwordError: string
-  isLoading: boolean
-  authStatus: 'loading' | 'unauthorized' | 'authorized' | null
+  email: string // Valor do campo e-mail
+  password: string // Valor do campo senha
+  emailError: string // Mensagem de erro para e-mail
+  passwordError: string // Mensagem de erro para senha
+  isLoading: boolean // Estado de carregamento
+  authStatus: 'loading' | 'unauthorized' | 'authorized' | null // Status de autenticação
   touched: {
-    email: boolean
-    password: boolean
+    email: boolean // Se o campo e-mail foi interagido
+    password: boolean // Se o campo senha foi interagido
   }
 }
 
-interface ValidationResult {
-  emailError: string
-  passwordError: string
-}
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const DEBOUNCE_DELAY = 500 // Delay in milliseconds for debouncing
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Regex para validação de e-mail
+const DEBOUNCE_DELAY = 500 // Tempo de debounce para validação (ms)
 
-// Validation logic for individual fields
+/**
+ * Valida um campo específico do formulário
+ * 
+ * @param field - Campo a ser validado ('email' ou 'password')
+ * @param value - Valor atual do campo
+ * @returns Mensagem de erro ou string vazia se válido
+ */
 const validateField = (
   field: 'email' | 'password',
   value: string
@@ -47,7 +48,15 @@ const validateField = (
   return ''
 }
 
-// Email input component
+/**
+ * Componente de campo de e-mail
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Handler para mudanças no campo
+ * @param onBlur - Handler para quando o campo perde o foco
+ * @param error - Mensagem de erro (se houver)
+ * @returns Componente de campo de e-mail
+ */
 const EmailField = ({
   value,
   onChange,
@@ -74,7 +83,15 @@ const EmailField = ({
   </Field.Root>
 )
 
-// Password input component
+/**
+ * Componente de campo de senha
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Handler para mudanças no campo
+ * @param onBlur - Handler para quando o campo perde o foco
+ * @param error - Mensagem de erro (se houver)
+ * @returns Componente de campo de senha
+ */
 const PasswordField = ({
   value,
   onChange,
@@ -100,7 +117,17 @@ const PasswordField = ({
   </Field.Root>
 )
 
-// Login form component
+/**
+ * Componente de formulário de login
+ * 
+ * @param email - Valor atual do e-mail
+ * @param password - Valor atual da senha
+ * @param onEmailChange - Handler para mudanças no e-mail
+ * @param onPasswordChange - Handler para mudanças na senha
+ * @param onSubmit - Handler para submissão do formulário
+ * @param isLoading - Indica se o login está em processamento
+ * @returns Componente de formulário de login
+ */
 const LoginForm = ({
   email,
   password,
@@ -126,7 +153,7 @@ const LoginForm = ({
     touched: { email: false, password: false }
   })
 
-  // Debounced validation for email
+  // Validação debounced para e-mail
   useEffect(() => {
     if (!formState.touched.email) return
 
@@ -138,7 +165,7 @@ const LoginForm = ({
     return () => clearTimeout(timer)
   }, [email, formState.touched.email])
 
-  // Debounced validation for password
+  // Validação debounced para senha
   useEffect(() => {
     if (!formState.touched.password) return
 
@@ -150,7 +177,11 @@ const LoginForm = ({
     return () => clearTimeout(timer)
   }, [password, formState.touched.password])
 
-  // Handle blur to mark field as touched
+  /**
+   * Marca campo como tocado ao perder o foco
+   * 
+   * @param field - Campo que perdeu o foco ('email' ou 'password')
+   */
   const handleBlur = (field: 'email' | 'password') => {
     setFormState((prev) => ({
       ...prev,
@@ -193,6 +224,16 @@ const LoginForm = ({
   )
 }
 
+/**
+ * Página inicial da aplicação
+ * 
+ * Exibe:
+ * - Formulário de login
+ * - Seção de CTA para cadastro
+ * - Componentes globais (Toaster, ThemeToggle)
+ * 
+ * @returns Componente da página inicial
+ */
 export default function HomePage() {
   const router = useRouter()
   const isMobile = useBreakpointValue({ base: true, md: false })
@@ -206,7 +247,7 @@ export default function HomePage() {
     touched: { email: false, password: false }
   })
 
-  // Check authorization status on mount
+  // Verifica autenticação ao carregar a página
   useEffect(() => {
     const checkAuthorization = () => {
       const token = localStorage.getItem('access_token')
@@ -219,7 +260,7 @@ export default function HomePage() {
     checkAuthorization()
   }, [router])
 
-  // Handle toast messages from localStorage
+  // Exibe notificações salvas no localStorage
   useEffect(() => {
     const storedToastData = localStorage.getItem('toast')
     if (storedToastData) {
@@ -233,12 +274,21 @@ export default function HomePage() {
     }
   }, [])
 
-  // Handle input changes
+  /**
+   * Atualiza valores dos campos do formulário
+   * 
+   * @param field - Campo a ser atualizado ('email' ou 'password')
+   * @param value - Novo valor do campo
+   */
   const handleInputChange = (field: 'email' | 'password', value: string) => {
     setFormState((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Handle login submission
+  /**
+   * Processa o login do usuário
+   * 
+   * @param e - Evento de formulário
+   */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormState((prev) => ({
@@ -247,7 +297,7 @@ export default function HomePage() {
       touched: { email: true, password: true }
     }))
 
-    // Validate all fields on submission
+    // Valida campos
     const emailError = validateField('email', formState.email)
     const passwordError = validateField('password', formState.password)
 
@@ -306,10 +356,14 @@ export default function HomePage() {
     }
   }
 
+  /**
+   * Redireciona para página de cadastro
+   */
   const handleSignUp = () => {
     router.push('/criar-conta')
   }
 
+  // Não renderiza nada enquanto verifica autenticação
   if (formState.authStatus === null) return null
 
   return (
@@ -330,7 +384,7 @@ export default function HomePage() {
         align="center"
         gap="4rem"
       >
-        {/* Coluna do Login - Esquerda */}
+        {/* Coluna de login */}
         <Box
           width={isMobile ? '100%' : '50%'}
           maxWidth="500px"
@@ -350,7 +404,7 @@ export default function HomePage() {
           />
         </Box>
 
-        {/* Coluna de CTA - Direita */}
+        {/* Coluna de CTA */}
         <Box
           width={isMobile ? '100%' : '50%'}
           maxWidth="500px"

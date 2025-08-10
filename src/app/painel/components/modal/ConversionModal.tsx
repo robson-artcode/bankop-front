@@ -11,28 +11,35 @@ import { RootState } from '../../../store'
 import { FormatNumber } from '@chakra-ui/react'
 
 interface ConversionModalProps {
-  onClose: () => void
+  onClose: () => void // Função para fechar o modal
 }
 
 interface FormState {
-  opCoinsInput: string
-  isLoading: boolean
-  amountError: string
+  opCoinsInput: string // Valor digitado pelo usuário para conversão
+  isLoading: boolean // Estado de carregamento durante a conversão
+  amountError: string // Mensagem de erro para o valor
 }
 
 interface ValidationResult {
-  isValid: boolean
-  amountError: string
+  isValid: boolean // Indica se o valor é válido
+  amountError: string // Mensagem de erro detalhada
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
-const CONVERSION_RATE = 5
+const CONVERSION_RATE = 5 // Taxa fixa de conversão: 1 BRL = 5 OpCoins
 
-// Validation logic for OpCoins input
+/**
+ * Valida o valor de OpCoins informado para conversão
+ * 
+ * @param opCoinsInput - Valor digitado pelo usuário
+ * @param maxOpCoins - Saldo máximo disponível em OpCoins
+ * @returns Objeto com resultado da validação
+ */
 const validateAmount = (opCoinsInput: string, maxOpCoins: number): ValidationResult => {
   const amount = Number(opCoinsInput)
   let amountError = ''
 
+  // Validações do valor informado
   if (!opCoinsInput || amount <= 0) {
     amountError = 'A quantidade deve ser maior que 0'
   } else if (amount > maxOpCoins) {
@@ -47,7 +54,15 @@ const validateAmount = (opCoinsInput: string, maxOpCoins: number): ValidationRes
   }
 }
 
-// OpCoins input component
+/**
+ * Componente para entrada de OpCoins a serem convertidos
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Função chamada ao alterar o valor
+ * @param error - Mensagem de erro (se houver)
+ * @param disabled - Se o campo está desabilitado
+ * @returns Componente de campo de entrada
+ */
 const OpCoinsField = ({
   value,
   onChange,
@@ -76,7 +91,12 @@ const OpCoinsField = ({
   </Field.Root>
 )
 
-// Balance display component
+/**
+ * Componente para exibição do saldo convertido em tempo real
+ * 
+ * @param opCoinsInput - Valor em OpCoins sendo convertido
+ * @returns Componente de exibição do saldo
+ */
 const BalanceDisplay = ({ opCoinsInput }: { opCoinsInput: string }) => {
   const convertedValue = opCoinsInput ? Number(opCoinsInput) / CONVERSION_RATE : 0
   return (
@@ -89,6 +109,15 @@ const BalanceDisplay = ({ opCoinsInput }: { opCoinsInput: string }) => {
   )
 }
 
+/**
+ * Modal para conversão de OpCoins em BRL
+ * 
+ * Gerencia todo o processo de conversão de moedas virtuais,
+ * incluindo validação, requisição à API e atualização do estado global
+ * 
+ * @param onClose - Função para fechar o modal
+ * @returns Componente de modal de conversão
+ */
 export function ConversionModal({ onClose }: ConversionModalProps) {
   const dispatch = useDispatch()
   const { opCoins } = useSelector((state: RootState) => state.conversion)
@@ -98,13 +127,19 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
     amountError: ''
   })
 
-  // Handle input change with validation
+  /**
+   * Atualiza o valor do campo de entrada com validação em tempo real
+   * 
+   * @param value - Novo valor digitado
+   */
   const handleInputChange = (value: string) => {
     const { amountError } = validateAmount(value, opCoins)
     setFormState((prev) => ({ ...prev, opCoinsInput: value, amountError }))
   }
 
-  // Handle conversion submission
+  /**
+   * Processa a conversão de OpCoins para BRL
+   */
   const handleConvert = async () => {
     const { isValid, amountError } = validateAmount(formState.opCoinsInput, opCoins)
     setFormState((prev) => ({ ...prev, amountError, isLoading: isValid }))
@@ -114,6 +149,8 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
     try {
       const token = localStorage.getItem('access_token')
       const opCoinsToConvert = Number(formState.opCoinsInput)
+      
+      // Requisição para API de conversão
       const res = await fetch(`${API_URL}/wallets/convert`, {
         method: 'PATCH',
         headers: {
@@ -128,10 +165,13 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
       }
 
       const data = await res.json()
+      
+      // Atualiza os estados globais com os novos valores
       dispatch(setOpCoins(data.updatedOpCoinBalance))
       dispatch(setBrlCoins(data.updatedBRLCoinBalance))
       dispatch(setNewTransactions(data.newTransaction))
 
+      // Feedback visual para o usuário
       toaster.create({
         title: 'Conversão realizada',
         description: `Você converteu ${opCoinsToConvert} OpCoins com sucesso!`,
@@ -142,6 +182,7 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
 
       onClose()
     } catch (error) {
+      // Tratamento de erros
       toaster.create({
         title: 'Erro',
         description: error instanceof Error ? error.message : 'Erro ao realizar conversão',
@@ -156,13 +197,18 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
 
   return (
     <Box>
+      {/* Campo para entrada de OpCoins */}
       <OpCoinsField
         value={formState.opCoinsInput}
         onChange={handleInputChange}
         error={formState.amountError}
         disabled={formState.isLoading}
       />
+      
+      {/* Visualização do saldo convertido */}
       <BalanceDisplay opCoinsInput={formState.opCoinsInput} />
+      
+      {/* Botão de conversão */}
       <Button
         width="full"
         mt={4}
@@ -175,6 +221,8 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
       >
         Converter
       </Button>
+      
+      {/* Componente para exibição de notificações */}
       <Toaster />
     </Box>
   )

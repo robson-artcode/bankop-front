@@ -9,17 +9,17 @@ import { ThemeToggle } from '../../components/ThemeToggle'
 import styles from '../page.module.css'
 
 interface FormState {
-  fullName: string
-  email: string
-  password: string
-  nameError: string
-  emailError: string
-  passwordError: string
-  authStatus: 'loading' | 'unauthorized' | 'authorized'
+  fullName: string // Nome completo do usuário
+  email: string // E-mail do usuário
+  password: string // Senha do usuário
+  nameError: string // Erro de validação do nome
+  emailError: string // Erro de validação do e-mail
+  passwordError: string // Erro de validação da senha
+  authStatus: 'loading' | 'unauthorized' | 'authorized' // Estado de autenticação
   touched: {
-    fullName: boolean
-    email: boolean
-    password: boolean
+    fullName: boolean // Se o campo nome foi tocado
+    email: boolean // Se o campo e-mail foi tocado
+    password: boolean // Se o campo senha foi tocado
   }
 }
 
@@ -30,10 +30,16 @@ interface ValidationResult {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const DEBOUNCE_DELAY = 500 // Delay in milliseconds for debouncing
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Regex para validar e-mail
+const DEBOUNCE_DELAY = 500 // Tempo de debounce para validação (ms)
 
-// Validation logic for individual fields
+/**
+ * Valida um campo específico do formulário
+ * 
+ * @param field - Campo a ser validado ('fullName', 'email' ou 'password')
+ * @param value - Valor atual do campo
+ * @returns Mensagem de erro ou string vazia se válido
+ */
 const validateField = (
   field: 'fullName' | 'email' | 'password',
   value: string
@@ -51,7 +57,15 @@ const validateField = (
   return ''
 }
 
-// Name input component
+/**
+ * Componente para campo de nome completo
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Função chamada ao alterar o valor
+ * @param onBlur - Função chamada ao sair do campo
+ * @param error - Mensagem de erro (se houver)
+ * @returns Componente de campo de entrada
+ */
 const NameField = ({
   value,
   onChange,
@@ -77,7 +91,15 @@ const NameField = ({
   </Field.Root>
 )
 
-// Email input component
+/**
+ * Componente para campo de e-mail
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Função chamada ao alterar o valor
+ * @param onBlur - Função chamada ao sair do campo
+ * @param error - Mensagem de erro (se houver)
+ * @returns Componente de campo de entrada
+ */
 const EmailField = ({
   value,
   onChange,
@@ -104,7 +126,15 @@ const EmailField = ({
   </Field.Root>
 )
 
-// Password input component
+/**
+ * Componente para campo de senha
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Função chamada ao alterar o valor
+ * @param onBlur - Função chamada ao sair do campo
+ * @param error - Mensagem de erro (se houver)
+ * @returns Componente de campo de entrada
+ */
 const PasswordField = ({
   value,
   onChange,
@@ -130,6 +160,17 @@ const PasswordField = ({
   </Field.Root>
 )
 
+/**
+ * Página de registro de novos usuários
+ * 
+ * Gerencia todo o processo de criação de conta, incluindo:
+ * - Validação dos campos
+ * - Verificação de autenticação existente
+ * - Comunicação com a API
+ * - Feedback visual ao usuário
+ * 
+ * @returns JSX.Element
+ */
 export default function RegisterPage() {
   const router = useRouter()
   const [formState, setFormState] = useState<FormState>({
@@ -147,7 +188,10 @@ export default function RegisterPage() {
     }
   })
 
-  // Check authorization status on mount
+  /**
+   * Efeito para verificar autenticação ao carregar a página
+   * Redireciona usuários já autenticados para o painel
+   */
   useEffect(() => {
     const checkAuthorization = () => {
       const token = localStorage.getItem('access_token')
@@ -160,7 +204,10 @@ export default function RegisterPage() {
     checkAuthorization()
   }, [router])
 
-  // Debounced validation for fullName
+  /**
+   * Efeito para validação debounced do nome completo
+   * Executa após o usuário parar de digitar por 500ms
+   */
   useEffect(() => {
     if (!formState.touched.fullName) return
 
@@ -172,7 +219,10 @@ export default function RegisterPage() {
     return () => clearTimeout(timer)
   }, [formState.fullName, formState.touched.fullName])
 
-  // Debounced validation for email
+  /**
+   * Efeito para validação debounced do e-mail
+   * Executa após o usuário parar de digitar por 500ms
+   */
   useEffect(() => {
     if (!formState.touched.email) return
 
@@ -184,7 +234,10 @@ export default function RegisterPage() {
     return () => clearTimeout(timer)
   }, [formState.email, formState.touched.email])
 
-  // Debounced validation for password
+  /**
+   * Efeito para validação debounced da senha
+   * Executa após o usuário parar de digitar por 500ms
+   */
   useEffect(() => {
     if (!formState.touched.password) return
 
@@ -196,7 +249,12 @@ export default function RegisterPage() {
     return () => clearTimeout(timer)
   }, [formState.password, formState.touched.password])
 
-  // Handle input changes
+  /**
+   * Atualiza o estado do formulário quando um campo é alterado
+   * 
+   * @param field - Campo sendo alterado
+   * @param value - Novo valor do campo
+   */
   const handleInputChange = (
     field: 'fullName' | 'email' | 'password',
     value: string
@@ -204,7 +262,11 @@ export default function RegisterPage() {
     setFormState((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Handle input blur to mark field as touched
+  /**
+   * Marca um campo como "tocado" quando perde o foco
+   * 
+   * @param field - Campo que perdeu o foco
+   */
   const handleBlur = (field: 'fullName' | 'email' | 'password') => {
     setFormState((prev) => ({
       ...prev,
@@ -212,9 +274,11 @@ export default function RegisterPage() {
     }))
   }
 
-  // Handle form submission
+  /**
+   * Processa o envio do formulário de registro
+   */
   const handleRegister = async () => {
-    // Validate all fields on submission
+    // Valida todos os campos antes de enviar
     const nameError = validateField('fullName', formState.fullName)
     const emailError = validateField('email', formState.email)
     const passwordError = validateField('password', formState.password)
@@ -231,9 +295,11 @@ export default function RegisterPage() {
       }
     }))
 
+    // Não prossegue se houver erros
     if (nameError || emailError || passwordError) return
 
     try {
+      // Requisição para API de registro
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -248,11 +314,15 @@ export default function RegisterPage() {
         throw new Error('Erro ao criar conta')
       }
 
+      // Processa resposta da API
       const { access_token, user } = await response.json()
+      
+      // Armazena dados do usuário no localStorage
       localStorage.setItem('access_token', access_token)
       localStorage.setItem('user_name', user.name)
       localStorage.setItem('user_email', user.email)
 
+      // Configura mensagem de sucesso para exibir após redirecionamento
       localStorage.setItem(
         'toast',
         JSON.stringify({
@@ -261,8 +331,10 @@ export default function RegisterPage() {
         })
       )
 
+      // Redireciona para página inicial
       router.push('/')
     } catch (error) {
+      // Exibe mensagem de erro
       toaster.create({
         description: 'Erro ao criar conta',
         type: 'error',
@@ -271,6 +343,7 @@ export default function RegisterPage() {
     }
   }
 
+  // Não renderiza nada enquanto verifica autenticação
   if (formState.authStatus === 'loading') return null
 
   return (
@@ -287,19 +360,25 @@ export default function RegisterPage() {
           <Heading size="2xl" textAlign="center" marginBottom={6}>
             Crie sua conta em alguns segundos
           </Heading>
+          
           <Stack direction="column" gap={4} width="100%">
+            {/* Campo de nome completo */}
             <NameField
               value={formState.fullName}
               onChange={(value) => handleInputChange('fullName', value)}
               onBlur={() => handleBlur('fullName')}
               error={formState.nameError}
             />
+            
+            {/* Campo de e-mail */}
             <EmailField
               value={formState.email}
               onChange={(value) => handleInputChange('email', value)}
               onBlur={() => handleBlur('email')}
               error={formState.emailError}
             />
+            
+            {/* Campo de senha */}
             <PasswordField
               value={formState.password}
               onChange={(value) => handleInputChange('password', value)}
@@ -307,6 +386,8 @@ export default function RegisterPage() {
               error={formState.passwordError}
             />
           </Stack>
+          
+          {/* Botão de registro */}
           <ButtonGroup size="xl" width="100%" className={styles.formButtonGroup}>
             <Button
               width="100%"
@@ -322,6 +403,8 @@ export default function RegisterPage() {
           </ButtonGroup>
         </Stack>
       </Box>
+      
+      {/* Componentes globais */}
       <Toaster />
       <ThemeToggle />
     </Box>

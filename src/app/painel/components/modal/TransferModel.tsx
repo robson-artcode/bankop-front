@@ -10,29 +10,29 @@ import { setNewTransactions } from '../../../store/transactionSlice'
 import { RootState } from '../../../store'
 
 interface TransferModalProps {
-  onClose: () => void
+  onClose: () => void // Função para fechar o modal
 }
 
 interface FormState {
-  recipientEmail: string
-  amount: number
-  currency: string[]
-  isLoading: boolean
-  emailError: string
-  currencyError: string
-  amountError: string
-  currentUserEmail: string
+  recipientEmail: string // E-mail do destinatário
+  amount: number // Quantidade a transferir
+  currency: string[] // Moeda selecionada
+  isLoading: boolean // Estado de carregamento
+  emailError: string // Mensagem de erro para e-mail
+  currencyError: string // Mensagem de erro para moeda
+  amountError: string // Mensagem de erro para quantidade
+  currentUserEmail: string // E-mail do usuário atual
 }
 
 interface ValidationResult {
-  isValid: boolean
-  emailError: string
-  currencyError: string
-  amountError: string
+  isValid: boolean // Indica se o formulário é válido
+  emailError: string // Mensagem de erro para e-mail
+  currencyError: string // Mensagem de erro para moeda
+  amountError: string // Mensagem de erro para quantidade
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Regex para validação de e-mail
 const CURRENCIES = createListCollection({
   items: [
     { label: "Op Coin", value: "OPCOIN" },
@@ -40,7 +40,17 @@ const CURRENCIES = createListCollection({
   ]
 })
 
-// Validation logic extracted into a utility function
+/**
+ * Valida os campos do formulário de transferência
+ * 
+ * @param email - E-mail do destinatário
+ * @param currency - Moeda selecionada
+ * @param amount - Quantidade a transferir
+ * @param currentUserEmail - E-mail do usuário atual
+ * @param opCoins - Saldo em OP Coin
+ * @param brlCoins - Saldo em BRL
+ * @returns Objeto com resultados da validação
+ */
 const validateForm = (
   email: string,
   currency: string[],
@@ -53,7 +63,7 @@ const validateForm = (
   let currencyError = ''
   let amountError = ''
 
-  // Validate email
+  // Validações para o campo de e-mail
   if (!email) {
     emailError = 'E-mail é obrigatório'
   } else if (!EMAIL_REGEX.test(email)) {
@@ -62,12 +72,12 @@ const validateForm = (
     emailError = 'Não pode transferir para si mesmo'
   }
 
-  // Validate currency
+  // Validações para o campo de moeda
   if (currency.length === 0) {
     currencyError = 'Selecione uma moeda'
   }
 
-  // Validate amount
+  // Validações para o campo de quantidade
   if (amount <= 0) {
     amountError = 'A quantidade deve ser maior que 0'
   } else if (currency[0] === 'OPCOIN' && amount > opCoins) {
@@ -84,7 +94,14 @@ const validateForm = (
   }
 }
 
-// Email input component
+/**
+ * Componente para campo de e-mail do destinatário
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Função de callback quando o valor muda
+ * @param error - Mensagem de erro (se houver)
+ * @returns JSX.Element
+ */
 const EmailField = ({
   value,
   onChange,
@@ -106,7 +123,14 @@ const EmailField = ({
   </Field.Root>
 )
 
-// Currency selection component
+/**
+ * Componente para seleção de moeda
+ * 
+ * @param value - Valor atual selecionado
+ * @param onChange - Função de callback quando o valor muda
+ * @param error - Mensagem de erro (se houver)
+ * @returns JSX.Element
+ */
 const CurrencyField = ({
   value,
   onChange,
@@ -153,7 +177,15 @@ const CurrencyField = ({
   </Field.Root>
 )
 
-// Amount input component
+/**
+ * Componente para campo de quantidade a transferir
+ * 
+ * @param value - Valor atual do campo
+ * @param onChange - Função de callback quando o valor muda
+ * @param error - Mensagem de erro (se houver)
+ * @param disabled - Indica se o campo está desabilitado
+ * @returns JSX.Element
+ */
 const AmountField = ({
   value,
   onChange,
@@ -187,6 +219,12 @@ const AmountField = ({
   </Field.Root>
 )
 
+/**
+ * Modal para realizar transferências entre usuários
+ * 
+ * @param onClose - Função para fechar o modal
+ * @returns JSX.Element
+ */
 export function TransferModal({ onClose }: TransferModalProps) {
   const dispatch = useDispatch()
   const { opCoins, brlCoins } = useSelector((state: RootState) => state.conversion)
@@ -201,13 +239,17 @@ export function TransferModal({ onClose }: TransferModalProps) {
     currentUserEmail: ''
   })
 
-  // Load current user's email from localStorage
+  // Carrega o e-mail do usuário atual do localStorage ao montar o componente
   useEffect(() => {
     const userEmail = localStorage.getItem('user_email') || ''
     setFormState((prev) => ({ ...prev, currentUserEmail: userEmail }))
   }, [])
 
-  // Handle email input changes
+  /**
+   * Atualiza o estado do campo de e-mail com validação
+   * 
+   * @param value - Novo valor do campo de e-mail
+   */
   const handleEmailChange = (value: string) => {
     setFormState((prev) => {
       const { isValid, emailError } = validateForm(
@@ -222,7 +264,11 @@ export function TransferModal({ onClose }: TransferModalProps) {
     })
   }
 
-  // Handle currency selection changes
+  /**
+   * Atualiza o estado da seleção de moeda com validação
+   * 
+   * @param value - Novo valor do campo de moeda
+   */
   const handleCurrencyChange = (value: string[]) => {
     setFormState((prev) => {
       const { isValid, currencyError, amountError } = validateForm(
@@ -237,7 +283,11 @@ export function TransferModal({ onClose }: TransferModalProps) {
     })
   }
 
-  // Handle amount input changes
+  /**
+   * Atualiza o estado do campo de quantidade com validação
+   * 
+   * @param value - Novo valor do campo de quantidade
+   */
   const handleAmountChange = (value: number) => {
     setFormState((prev) => {
       const { isValid, amountError } = validateForm(
@@ -252,7 +302,9 @@ export function TransferModal({ onClose }: TransferModalProps) {
     })
   }
 
-  // Handle form submission
+  /**
+   * Realiza a transferência após validação dos campos
+   */
   const handleTransfer = async () => {
     const { isValid, emailError, currencyError, amountError } = validateForm(
       formState.recipientEmail,
@@ -294,7 +346,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
 
       const data = await res.json()
 
-      // Update Redux store based on currency
+      // Atualiza o estado global com o novo saldo
       if (data.amountCoin === "BRL") {
         dispatch(setBrlCoins(data.newBalance))
       } else if (data.amountCoin === "OPCOIN") {
@@ -303,7 +355,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
 
       dispatch(setNewTransactions(data.newTransaction))
 
-      // Show success notification
+      // Exibe notificação de sucesso
       toaster.create({
         title: "Transferência realizada",
         description: `Você transferiu ${data.amount} ${data.amountCoin} com sucesso!`,
@@ -314,6 +366,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
 
       onClose()
     } catch (error) {
+      // Exibe notificação de erro
       toaster.create({
         title: "Erro",
         description: "Erro ao realizar transferência.",
