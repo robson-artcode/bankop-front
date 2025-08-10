@@ -1,24 +1,25 @@
 'use client';
 
-import Image from "next/image";
-import styles from "./page.module.css";
-import { Input, Button, ButtonGroup, Heading } from "@chakra-ui/react";
+import { Box, Flex, useBreakpointValue  } from "@chakra-ui/react";
 import { useRouter } from 'next/navigation';
-import { PasswordInput } from "@/components/ui/password-input";
-import { Toaster, toaster } from "@/components/ui/toaster";
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
+import { Toaster, toaster } from "../components/ui/toaster";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { LoginForm } from "./components/LoginForm";
+import { CtaSection } from "./components/CtaSection";
+import { LogoHeader } from "./components/LogoHeader";
+import styles from "./page.module.css";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 
 export default function HomePage() {
   const router = useRouter();
-
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Verifica autenticação inicial
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
     if (storedToken) {
@@ -28,7 +29,6 @@ export default function HomePage() {
     }
   }, [router]);
 
-  // Exibe toast salvo no localStorage
   useEffect(() => {
     const storedToastData = localStorage.getItem("toast");
     if (storedToastData) {
@@ -42,8 +42,9 @@ export default function HomePage() {
     }
   }, []);
 
-  const handleLoginSubmit = async (e?: FormEvent) => {
+  const handleLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
@@ -83,82 +84,71 @@ export default function HomePage() {
         duration: 5000,
         closable: true
       });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSignUp = () => {
+    router.push('/criar-conta');
   };
 
   if (isUserAuthenticated === null) return null;
 
   return (
-    <div className={styles.page} style={{ maxWidth: "950px", margin: "0 auto" }}>
-      {/* Coluna do Login */}
-      <div className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/bankop-logo.png"
-          alt="Logo BankOp"
-          width={360}
-          height={60}
-          priority
-          style={{
-            marginBottom: '1.1rem',
-            marginLeft: "auto",
-            marginRight: "auto",
-            maxWidth: "400px"
-          }}
-        />
-        <form onSubmit={handleLoginSubmit} style={{ width: '100%' }}>
-          <ol style={{ width: '100%', padding: 0, margin: 0 }}>
-            <li>
-              <Input
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={styles.inputField}
-              />
-              <PasswordInput
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={styles.inputField}
-                style={{ margin: '1rem 0' }}
-              />
-            </li>
-            <li>
-              <ButtonGroup size="xl" style={{ width: "100%" }}>
-                <Button style={{ width: "100%" }} bgColor="#1E40AF" type="submit">
-                  ENTRAR
-                </Button>
-              </ButtonGroup>
-            </li>
-          </ol>
-        </form>
-      </div>
+    <Box
+      width="100vw"
+      minHeight="100vh"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      padding="2rem"
+    >
+      <Flex
+        width="100%"
+        maxWidth="1200px"
+        direction={isMobile ? "column" : "row"}
+        justify="center"
+        align="center"
+        gap="4rem"
+      >
+        {/* Coluna do Login - Esquerda */}
+        <Box
+          width={isMobile ? "100%" : "50%"}
+          maxWidth="500px"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          padding="2rem"
+        >
+          <LogoHeader />
+          <LoginForm
+            email={email}
+            password={password}
+            onEmailChange={setEmail}
+            onPasswordChange={setPassword}
+            onSubmit={handleLogin}
+            isLoading={loading}
+          />
+        </Box>
 
-      {/* Coluna de CTA */}
-      <div className={styles.main} style={{ marginTop: 0 }}>
-        <Heading size="2xl" style={{ marginBottom: '1rem', textAlign: "center" }}>
-          Aproveite e ganhe pontos!
-        </Heading>
-        <Heading size="lg" style={{ marginBottom: '2.7rem', textAlign: "center" }}>
-          Crie agora mesmo a sua conta no BankOp e ganhe 5.000 pontos para serem usados como quiser em nossa aplicação.
-        </Heading>
-        <ol style={{ width: '100%', padding: 0, margin: 0 }}>
-          <li>
-            <ButtonGroup size="xl" style={{ width: "100%" }}>
-              <Button
-                bgColor="#1E40AF"
-                style={{ width: "100%" }}
-                onClick={() => router.push('/criar-conta')}
-              >
-                CRIAR MINHA CONTA
-              </Button>
-            </ButtonGroup>
-          </li>
-        </ol>
-      </div>
+        {/* Coluna de CTA - Direita */}
+        <Box
+          width={isMobile ? "100%" : "50%"}
+          maxWidth="500px"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          padding="2rem"
+        >
+          <CtaSection onSignUp={handleSignUp} />
+        </Box>
+      </Flex>
 
       <Toaster />
       <ThemeToggle />
-    </div>
+    </Box>
   );
 }

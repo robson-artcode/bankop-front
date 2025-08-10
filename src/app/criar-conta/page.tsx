@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { Input, Button, ButtonGroup, Heading } from "@chakra-ui/react"
+import { Input, Button, ButtonGroup, Heading, Box, Stack } from "@chakra-ui/react"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useRouter } from 'next/navigation'
 import { PasswordInput } from "@/components/ui/password-input"
@@ -10,10 +10,8 @@ import styles from "../page.module.css"
 
 const API_URL = process.env.API_URL as string;
 
-
 export default function RegisterPage() {
   const router = useRouter()
-
   const [authStatus, setAuthStatus] = useState<'loading' | 'unauthorized' | 'authorized'>('loading')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -61,21 +59,31 @@ export default function RegisterPage() {
   if (authStatus === 'loading') return null
 
   return (
-    <div
-      className={styles.page}
-      style={{ gridTemplateColumns: "auto", maxWidth: "500px", margin: "0 auto" }}
+    <Box 
+      className={styles.page} 
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      padding="2rem"
     >
-      <main className={styles.main}>
-        <Heading size="2xl" textAlign="center">
-          Crie sua conta em alguns segundos
-        </Heading>
-        <ol>
-          <li>
+      <Box 
+        className={styles.main}
+        width="100%"
+        maxWidth="400px"
+      >
+        <Stack direction="column" gap={6} width="100%">
+          <Heading size="2xl" textAlign="center" marginBottom={6}>
+            Crie sua conta em alguns segundos
+          </Heading>
+          
+          <Stack direction="column" gap={4} width="100%">
             <Input
               placeholder="Nome completo"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className={styles.formInput}
+              size="lg"
             />
             <Input
               placeholder="E-mail"
@@ -83,29 +91,34 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={styles.formInput}
+              size="lg"
             />
             <PasswordInput
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={styles.formInput}
+              size="lg"
             />
-          </li>
-          <li>
-            <ButtonGroup size="xl" className={styles.formButtonGroup}>
-              <Button
-                className={styles.submitButton}
-                bgColor="#1E40AF"
-                onClick={handleRegister}
-              >
-                CRIAR CONTA
-              </Button>
-            </ButtonGroup>
-          </li>
-        </ol>
-      </main>
+          </Stack>
+
+          <ButtonGroup size="xl" width="100%" className={styles.formButtonGroup}>
+            <Button
+              width="100%"
+              className={styles.submitButton}
+              backgroundColor="#1E40AF"
+              onClick={handleRegister}
+              size="lg"
+              height="48px"
+            >
+              CRIAR CONTA
+            </Button>
+          </ButtonGroup>
+        </Stack>
+      </Box>
+      
       <Toaster />
       <ThemeToggle />
-    </div>
+    </Box>
   )
 }
