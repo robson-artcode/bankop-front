@@ -252,7 +252,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
    */
   const handleEmailChange = (value: string) => {
     setFormState((prev) => {
-      const { isValid, emailError } = validateForm(
+      const { emailError } = validateForm(
         value,
         prev.currency,
         prev.amount,
@@ -271,7 +271,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
    */
   const handleCurrencyChange = (value: string[]) => {
     setFormState((prev) => {
-      const { isValid, currencyError, amountError } = validateForm(
+      const { currencyError, amountError } = validateForm(
         prev.recipientEmail,
         value,
         prev.amount,
@@ -290,7 +290,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
    */
   const handleAmountChange = (value: number) => {
     setFormState((prev) => {
-      const { isValid, amountError } = validateForm(
+      const { amountError } = validateForm(
         prev.recipientEmail,
         prev.currency,
         value,
@@ -366,6 +366,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
 
       onClose()
     } catch (error) {
+      void error;
       // Exibe notificação de erro
       toaster.create({
         title: "Erro",

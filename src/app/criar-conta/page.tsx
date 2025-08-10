@@ -23,12 +23,6 @@ interface FormState {
   }
 }
 
-interface ValidationResult {
-  nameError: string
-  emailError: string
-  passwordError: string
-}
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Regex para validar e-mail
 const DEBOUNCE_DELAY = 500 // Tempo de debounce para validação (ms)
@@ -334,6 +328,7 @@ export default function RegisterPage() {
       // Redireciona para página inicial
       router.push('/')
     } catch (error) {
+      void error;
       // Exibe mensagem de erro
       toaster.create({
         description: 'Erro ao criar conta',

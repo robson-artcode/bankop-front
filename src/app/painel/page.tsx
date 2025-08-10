@@ -67,6 +67,7 @@ export default function DashboardPage() {
       dispatch(setBrlCoins(brlWallet?.balance || 0));
       setWallets(data);
     } catch (error) {
+      void error;
       // Exibe mensagem de erro em caso de falha
       toaster.create({
         title: "Erro",
@@ -97,6 +98,7 @@ export default function DashboardPage() {
       const data = await response.json();
       dispatch(setTransactions(data));
     } catch (error) {
+      void error;
       // Exibe mensagem de erro em caso de falha
       toaster.create({
         title: "Erro",
