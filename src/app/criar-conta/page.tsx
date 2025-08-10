@@ -8,83 +8,96 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { ThemeToggle } from "../components/ThemeToggle"
 import styles from "../page.module.css"
 
-export default function Home() {
-  
+const API_URL = process.env.API_URL as string;
+
+
+export default function RegisterPage() {
   const router = useRouter()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [name, setName] = useState('')
+
+  const [authStatus, setAuthStatus] = useState<'loading' | 'unauthorized' | 'authorized'>('loading')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   useEffect(() => {
-      const token = localStorage.getItem("access_token");
+    const checkAuthorization = () => {
+      const token = localStorage.getItem("access_token")
       if (token) {
-        router.push("/painel");
+        router.push("/painel")
       } else {
-        setIsAuthorized(false); 
+        setAuthStatus('unauthorized')
       }
-    }, []);
+    }
+    checkAuthorization()
+  }, [router])
 
-  const handleSubmit = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await fetch('http://localhost:3333/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: fullName, email, password }),
       })
 
       if (!response.ok) {
         throw new Error('Erro ao criar conta')
       }
 
-        localStorage.setItem("toast", JSON.stringify({
-            description: "Conta criada com sucesso",
-            type: "success"
-        }))
+      localStorage.setItem("toast", JSON.stringify({
+        description: "Conta criada com sucesso",
+        type: "success"
+      }))
 
-        router.push('/')
+      router.push('/')
     } catch (error) {
-        toaster.create({
-            description: "Erro ao criar conta",
-            type: "error",
-            closable: true,
-        })
+      toaster.create({
+        description: "Erro ao criar conta",
+        type: "error",
+        closable: true,
+      })
     }
   }
 
-  if (isAuthorized === null) return null;
+  if (authStatus === 'loading') return null
 
   return (
-    <div className={styles.page} style={{ maxWidth: "500px", margin: "0 auto" }}>
+    <div
+      className={styles.page}
+      style={{ gridTemplateColumns: "auto", maxWidth: "500px", margin: "0 auto" }}
+    >
       <main className={styles.main}>
-        <Heading size="2xl" textAlign="center">Crie sua conta em alguns segundos</Heading>
+        <Heading size="2xl" textAlign="center">
+          Crie sua conta em alguns segundos
+        </Heading>
         <ol>
           <li>
             <Input
-              placeholder="Nome"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={{ margin: "15px auto" }}
+              placeholder="Nome completo"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className={styles.formInput}
             />
             <Input
               placeholder="E-mail"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{ margin: "15px auto" }}
+              className={styles.formInput}
             />
             <PasswordInput
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ margin: "15px auto" }}
+              className={styles.formInput}
             />
           </li>
           <li>
-            <ButtonGroup size="xl" style={{ margin: "15px auto", width: "100%" }}>
-              <Button style={{ width: "100%" }} colorScheme="blue" onClick={handleSubmit}>
+            <ButtonGroup size="xl" className={styles.formButtonGroup}>
+              <Button
+                className={styles.submitButton}
+                bgColor="#1E40AF"
+                onClick={handleRegister}
+              >
                 CRIAR CONTA
               </Button>
             </ButtonGroup>

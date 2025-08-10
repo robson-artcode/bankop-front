@@ -25,7 +25,7 @@ interface transactionType {
     userFrom: transactionUserObject
     userTo: transactionUserObject
     type: transactionTypeObject
-    createdAt: Date
+    createdAt: string
 }
 
 interface ConversionState {

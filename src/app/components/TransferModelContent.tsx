@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Field, Input, For, Stack, Select, Portal, createListCollection } from '@chakra-ui/react'
+import { Button, Field, Input, Select, createListCollection } from '@chakra-ui/react'
 import { BeatLoader } from "react-spinners"
 import { Toaster, toaster } from "@/components/ui/toaster"
-import { RealTimeCurrencyConverter } from './RealTimeCurrencyConverter'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setBrlCoins, setOpCoins } from '../store/conversionSlice'
-import { setNewTransactions, setTransactions } from '../store/transactionSlice'
-import { RootState } from '../store'
+import { setNewTransactions } from '../store/transactionSlice'
 
 interface TransferModalContentProps {
   onClose: () => void
@@ -25,7 +23,6 @@ export function TransferModalContent({ onClose }: TransferModalContentProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     if (/^\d*\.?\d*$/.test(value)) {
-    //   dispatch(setOpCoinsToConvert(Number(value)))
         setAmountCoin(Number(value));
     }
   }
@@ -42,8 +39,6 @@ export function TransferModalContent({ onClose }: TransferModalContentProps) {
   };
 
   const getSelectedValue = () => selectedCurrency[0] || null;
-
-  console.log(selectedCurrency)
 
   const handleTransfer = async () => {
     try {
@@ -76,8 +71,6 @@ export function TransferModalContent({ onClose }: TransferModalContentProps) {
       } else if(data.amountCoin === "OPCOIN"){
          dispatch(setOpCoins(data.newBalance))
       }
-
-      console.log(data.newTransaction)
 
       dispatch(setNewTransactions(data.newTransaction))
 
@@ -150,8 +143,6 @@ export function TransferModalContent({ onClose }: TransferModalContentProps) {
         </Select.Positioner>
       </Select.Root>
       <Field.HelperText>Selecione a moeda de transferência</Field.HelperText>
-      
-      {/* Exibição do valor selecionado */}
       {selectedCurrency.length > 0 && (
         <div style={{ marginTop: '8px' }}>
           Moeda selecionada: {getSelectedValue()}
