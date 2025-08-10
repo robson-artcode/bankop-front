@@ -58,11 +58,18 @@ export function Logout() {
           if (!details.open) onClose()
         }}
         role="alertdialog"
-        motionPreset="slide-in-bottom"
         placement="center"
       >
         <DialogBackdrop />
-        <DialogContent>
+        <DialogContent
+          maxWidth={{ base: '90vw', md: '400px' }}
+          maxHeight={{ base: '80vh', md: 'auto' }}
+          position="fixed"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+          margin="0"
+        >
           <DialogHeader>
             <DialogTitle fontSize="lg" fontWeight="bold">
               Confirmar Logout

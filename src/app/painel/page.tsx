@@ -134,15 +134,15 @@ export default function DashboardPage() {
         </Grid>
       ) : wallets.length > 0 ? (
         <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
-          <GridItem>
+          <GridItem order={{ base: 1, md: 1 }}>
             <WalletCard wallets={wallets} brlCoinBalance={brlCoinBalance} opCoinBalance={opCoinBalance} />
           </GridItem>
 
-          <GridItem order={{ base: 3, md: 2 }} colSpan={{ base: 1, md: 2 }}>
+          <GridItem order={{ base: 2, md: 3 }} colSpan={{ base: 1, md: 2 }}>
             <ProductsCard />
           </GridItem>
 
-          <GridItem order={{ base: 2, md: 1 }}>
+          <GridItem order={{ base: 3, md: 2 }}>
             <TransactionsCard isLoading={isLoading} transactions={transactions} />
           </GridItem>
         </Grid>
