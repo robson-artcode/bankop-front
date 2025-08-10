@@ -5,14 +5,14 @@ import { Button, Field, Input, Select, createListCollection } from '@chakra-ui/r
 import { BeatLoader } from "react-spinners"
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useDispatch } from 'react-redux'
-import { setBrlCoins, setOpCoins } from '../store/conversionSlice'
-import { setNewTransactions } from '../store/transactionSlice'
+import { setBrlCoins, setOpCoins } from '../../../store/conversionSlice'
+import { setNewTransactions } from '../../../store/transactionSlice'
 
-interface TransferModalContentProps {
+interface TransferModalProps {
   onClose: () => void
 }
 
-export function TransferModalContent({ onClose }: TransferModalContentProps) {
+export function TransferModal({ onClose }: TransferModalProps) {
   const dispatch = useDispatch()
   const [convertLoading, setConvertLoading] = useState(false);
   const [userToTransfer, setUserToTransfer] = useState("");

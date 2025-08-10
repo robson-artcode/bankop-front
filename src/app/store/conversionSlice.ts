@@ -16,9 +16,6 @@ const conversionSlice = createSlice({
   name: 'conversion',
   initialState,
   reducers: {
-    setOpCoinsToConvert(state, action: PayloadAction<number>) {
-      state.opCoinsToConvert = action.payload
-    }, 
     setOpCoins(state, action: PayloadAction<number>) {
       state.opCoins = action.payload
     },
@@ -31,8 +28,7 @@ const conversionSlice = createSlice({
   }
 })
 
-export const { 
-  setOpCoinsToConvert,
+export const {
   setOpCoins,
   setBrlCoins,
   resetOpCoinsToConvert

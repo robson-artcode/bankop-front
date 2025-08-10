@@ -4,12 +4,12 @@ import { Grid, GridItem, Skeleton, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { useEffect, useState, useCallback } from "react";
-import { ThemeToggle } from "../components/ThemeToggle";
-import { Logout } from "../components/Logout";
-import { OpCoinConvert } from "../components/OpCoinConvert";
+import { ThemeToggle } from "../../components/ThemeToggle";
+import { Logout } from "./components/Logout";
+import { OverlayManager } from "./components/modal/OverlayManager";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { setBrlCoins, setOpCoins, setOpCoinsToConvert } from "../store/conversionSlice";
+import { setBrlCoins, setOpCoins } from "../store/conversionSlice";
 import { setTransactions } from "../store/transactionSlice";
 import { WalletCard } from "./components/WalletCard";
 import { ProductsCard } from "./components/ProductsCard";
@@ -49,7 +49,6 @@ export default function DashboardPage() {
       const opCoinWallet = data.find((w) => w.coin.symbol === "OPCOIN");
       const brlWallet = data.find((w) => w.coin.symbol === "BRL");
 
-      dispatch(setOpCoinsToConvert(0));
       dispatch(setOpCoins(opCoinWallet?.balance || 0));
       dispatch(setBrlCoins(brlWallet?.balance || 0));
       setWallets(data);
@@ -156,7 +155,7 @@ export default function DashboardPage() {
       <Toaster />
       <ThemeToggle />
       <Logout />
-      <OpCoinConvert.Viewport />
+      <OverlayManager.Viewport />
     </div>
   );
 }

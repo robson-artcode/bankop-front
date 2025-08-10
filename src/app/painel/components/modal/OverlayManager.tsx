@@ -8,7 +8,7 @@ interface DialogProps {
   content?: React.ReactNode
 }
 
-export const OpCoinConvert = createOverlay<DialogProps>((props) => {
+export const OverlayManager = createOverlay<DialogProps>((props) => {
   const { title, description, content, ...rest } = props
   return (
     <Dialog.Root {...rest} size={"xs"}>
@@ -37,10 +37,10 @@ export const OpCoinConvert = createOverlay<DialogProps>((props) => {
 /*
 
 Adicionar: 
-<OpCoinConvert.Viewport />
+<OverlayManager.Viewport />
 
 onClick={() => {
-    OpCoinConvert.open("a", {
+    OverlayManager.open("a", {
         title: "Dialog Title",
         description: "Dialog Description",
     })

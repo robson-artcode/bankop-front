@@ -2,9 +2,9 @@
 
 import { Card, Heading, Grid, Icon } from "@chakra-ui/react";
 import { LuArrowRightLeft, LuCircleArrowRight } from "react-icons/lu";
-import { OpCoinConvert } from "../../components/OpCoinConvert";
-import { ConversionModalContent } from "../../components/ConversionModalContent";
-import { TransferModalContent } from "../../components/TransferModelContent";
+import { OverlayManager } from "./modal/OverlayManager";
+import { ConversionModal } from "./modal/ConversionModal";
+import { TransferModal } from "./modal/TransferModel";
 
 export const ProductsCard = () => (
   <Card.Root>
@@ -16,10 +16,10 @@ export const ProductsCard = () => (
         <Card.Root
           cursor="pointer"
           onClick={() =>
-            OpCoinConvert.open("a", {
+            OverlayManager.open("a", {
               title: "Conversão de Pontos",
               description: "Faça a conversão dos seus pontos agora mesmo. A cada 5 pontos, você receberá 1 real.",
-              content: <ConversionModalContent onClose={() => OpCoinConvert.close("a")} />,
+              content: <ConversionModal onClose={() => OverlayManager.close("a")} />,
             })
           }
         >
@@ -37,10 +37,10 @@ export const ProductsCard = () => (
         <Card.Root
           cursor="pointer"
           onClick={() =>
-            OpCoinConvert.open("a", {
+            OverlayManager.open("a", {
               title: "Transferência",
               description: "Escolha a moeda que deseja transferir, sua quantidade, e-mail do usuário e realize a transferência",
-              content: <TransferModalContent onClose={() => OpCoinConvert.close("a")} />,
+              content: <TransferModal onClose={() => OverlayManager.close("a")} />,
             })
           }
         >

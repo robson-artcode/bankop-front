@@ -4,7 +4,7 @@ import { Box, Flex, useBreakpointValue  } from "@chakra-ui/react";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { Toaster, toaster } from "../components/ui/toaster";
-import { ThemeToggle } from "./components/ThemeToggle";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { LoginForm } from "./components/LoginForm";
 import { CtaSection } from "./components/CtaSection";
 import { LogoHeader } from "./components/LogoHeader";
