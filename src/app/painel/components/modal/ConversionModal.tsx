@@ -73,23 +73,35 @@ const OpCoinsField = ({
   onChange: (value: string) => void
   error: string
   disabled: boolean
-}) => (
-  <Field.Root required invalid={!!error}>
-    <Field.Label>
-      OpCoins <Field.RequiredIndicator />
-    </Field.Label>
-    <Input
-      disabled={disabled}
-      placeholder="Quantidade de OpCoins"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      type="text"
-      inputMode="decimal"
-    />
-    {error && <Field.ErrorText>{error}</Field.ErrorText>}
-    <Field.HelperText>Digite o total de OpCoins que deseja converter</Field.HelperText>
-  </Field.Root>
-)
+}) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    // Permite apenas números inteiros (sem pontos decimais)
+    const regex = /^[0-9]*$/;
+    
+    if (inputValue === '' || regex.test(inputValue)) {
+      onChange(inputValue);
+    }
+  };
+
+  return (
+    <Field.Root required invalid={!!error}>
+      <Field.Label>
+        OpCoins <Field.RequiredIndicator />
+      </Field.Label>
+      <Input
+        disabled={disabled}
+        placeholder="Quantidade de OpCoins"
+        value={value}
+        onChange={handleChange}
+        type="text"
+        inputMode="numeric"
+      />
+      {error && <Field.ErrorText>{error}</Field.ErrorText>}
+      <Field.HelperText>Digite o total de OpCoins que deseja converter</Field.HelperText>
+    </Field.Root>
+  );
+};
 
 /**
  * Componente para exibição do saldo convertido em tempo real
