@@ -76,9 +76,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3333
 # URL base da API Servidor (ajuste conforme necessário)
 NEXT_PUBLIC_API_URL=https://bankop-back.onrender.com
 ```
-Caso queira executar o back-end que **já está online** na render, escolha a última. Caso queira instalar o back-end no seu local e prosseguir, entre no link do projeto back-end a seguir:
-
-https://github.com/robson-artcode/bankop-back
+Caso queira executar o aplicativo com o back-end que **já está online** na render, escolha a última. 
 
 ### Ambiente de Desenvolvimento
 Execute no mesmo terminal da pasta do projeto: 
@@ -86,6 +84,12 @@ Execute no mesmo terminal da pasta do projeto:
 npm run dev
 ```
 Acesse: [http://localhost:3000](http://localhost:3000)
+
+## Back-end (Servidor)
+
+Caso queira instalar o back-end no seu local e prosseguir, entre no link do projeto back-end a seguir:
+
+https://github.com/robson-artcode/bankop-back
 
 ---
 ## 📖 Guia Rápido
