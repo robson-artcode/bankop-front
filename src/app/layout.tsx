@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "BankOp - Seu banco de Operações e Pontos",
   description: "Gerenciamento financeiro",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/bankop-icon.png",
   },
 };
 
