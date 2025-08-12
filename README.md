@@ -39,6 +39,10 @@ flowchart TD
     A -->|PATCH /wallets/convert| B
     A -->|POST /wallets/transfer| B
     A -->|GET /transactions| B
+    A -->|GET /users/profile| B
+    A -->|POST /users/profile| B
+    A -->|PUT /users/profile| B
+    A -->|DELETE /users/profile| B
     B -->|JSON Response| C[Redux Store]
     C -->|Atualiza UI| D[Next.js Frontend]
 ```
