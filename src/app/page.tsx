@@ -343,7 +343,6 @@ export default function HomePage() {
 
       router.push('/painel')
     } catch (err) {
-      console.error('Erro na requisição de login:', err)
       toaster.create({
         title: 'Erro inesperado',
         description: 'Tente novamente mais tarde.',

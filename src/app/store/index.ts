@@ -2,11 +2,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import conversionReducer from './conversionSlice'
 import transactionReducer from './transactionSlice'
+import profileReducer from './profileSlice'
 
 export const store = configureStore({
   reducer: {
     conversion: conversionReducer,
-    transaction: transactionReducer
+    transaction: transactionReducer,
+    profile: profileReducer
   }
 })
 

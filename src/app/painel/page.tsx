@@ -11,10 +11,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { setBrlCoins, setOpCoins } from "../store/conversionSlice";
 import { setTransactions } from "../store/transactionSlice";
+import { setProfile } from "../store/profileSlice";
 import { WalletCard } from "./components/WalletCard";
 import { ProductsCard } from "./components/ProductsCard";
 import { TransactionsCard } from "./components/TransactionsCard";
 import { Wallet } from "./types";
+import { ProfileCard } from "./components/Profile";
+
 
 // URL da API obtida das variáveis de ambiente
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
@@ -40,7 +43,7 @@ export default function DashboardPage() {
   const opCoinBalance = useSelector((state: RootState) => state.conversion.opCoins); // Saldo em OP Coin
   const brlCoinBalance = useSelector((state: RootState) => state.conversion.brlCoins); // Saldo em BRL
   const transactions = useSelector((state: RootState) => state.transaction.transactions); // Lista de transações
-
+  
   /**
    * Carrega as carteiras do usuário a partir da API
    * 
@@ -118,6 +121,43 @@ export default function DashboardPage() {
     }
   }, [dispatch]);
 
+
+  /**
+   * Carrega o perfil do usuário a partir da API
+   * 
+   * @param token - Token de autenticação JWT
+   */
+  const loadProfile = useCallback(async (token: string) => {
+    try {
+      const response = await fetch(`${API_URL}/users/profile`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw await response.json();
+      }
+      const data = await response.json();
+
+      dispatch(setProfile(data.profile));
+    } catch (error) {
+       const message = (typeof error === 'object' && error !== null && 'message' in error) 
+      ? error.message 
+      : "Falha ao carregar o perfil do usuário";
+      // Exibe mensagem de erro em caso de falha
+      toaster.create({
+        title: "Erro",
+        description: message,
+        type: "error",
+        duration: 5000,
+        closable: true,
+      });
+    }
+  }, [dispatch]);
+
   // Efeitos colaterais
   useEffect(() => {
     /**
@@ -135,14 +175,18 @@ export default function DashboardPage() {
       setIsLoading(true);
       try {
         // Carrega carteiras e transações em paralelo
-        await Promise.all([loadWallets(token), loadTransactions(token)]);
+        await Promise.all([
+          loadWallets(token),
+          loadTransactions(token),
+          loadProfile(token)
+        ]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [router, loadWallets, loadTransactions]);
+  }, [router, loadWallets, loadTransactions, loadProfile]);
 
   useEffect(() => {
     /**
@@ -179,6 +223,9 @@ export default function DashboardPage() {
           {/* Card de carteiras */}
           <GridItem order={{ base: 1, md: 1 }}>
             <WalletCard wallets={wallets} brlCoinBalance={brlCoinBalance} opCoinBalance={opCoinBalance} />
+            <GridItem marginTop={6}>
+              <ProfileCard />
+            </GridItem>
           </GridItem>
 
           {/* Card de produtos */}
