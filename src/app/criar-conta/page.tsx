@@ -208,6 +208,10 @@ export default function RegisterPage() {
         throw new Error('Erro ao criar conta')
       }
 
+      if (!response.ok) {
+        throw await response.json();
+      }
+
       // Processa resposta da API
       const { access_token, user } = await response.json()
       
@@ -228,10 +232,12 @@ export default function RegisterPage() {
       // Redireciona para página inicial
       router.push('/')
     } catch (error) {
-      void error;
+       const message = (typeof error === 'object' && error !== null && 'message' in error) 
+      ? error.message 
+      : "Erro ao criar conta";
       // Exibe mensagem de erro
       toaster.create({
-        description: 'Erro ao criar conta',
+        description: message,
         type: 'error',
         closable: true
       })

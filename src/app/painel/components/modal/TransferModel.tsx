@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button, Field, Input, Select, createListCollection } from '@chakra-ui/react'
-import { BeatLoader } from "react-spinners"
+import { Button, Field, Input, Select, createListCollection, Flex } from '@chakra-ui/react'
 import { Toaster, toaster } from "@/components/ui/toaster"
 import { useDispatch, useSelector } from 'react-redux'
 import { setBrlCoins, setOpCoins } from '../../../store/conversionSlice'
@@ -222,6 +221,9 @@ const AmountField = ({
 /**
  * Modal para realizar transferências entre usuários
  * 
+ * Gerencia o processo de transferência, incluindo validação, requisição à API,
+ * atualização do estado global e suporte a submissão via Enter.
+ * 
  * @param onClose - Função para fechar o modal
  * @returns JSX.Element
  */
@@ -341,7 +343,7 @@ export function TransferModal({ onClose }: TransferModalProps) {
       })
 
       if (!res.ok) {
-        throw new Error(`Erro ${res.status}`)
+        throw await res.json();
       }
 
       const data = await res.json()
@@ -366,11 +368,14 @@ export function TransferModal({ onClose }: TransferModalProps) {
 
       onClose()
     } catch (error) {
-      void error;
+      const message = (typeof error === 'object' && error !== null && 'message' in error) 
+        ? error.message 
+        : "Erro ao realizar transferência";
+      
       // Exibe notificação de erro
       toaster.create({
         title: "Erro",
-        description: "Erro ao realizar transferência.",
+        description: message,
         type: "error",
         duration: 5000,
         closable: true
@@ -381,33 +386,43 @@ export function TransferModal({ onClose }: TransferModalProps) {
   }
 
   return (
-    <>
-      <EmailField
-        value={formState.recipientEmail}
-        onChange={handleEmailChange}
-        error={formState.emailError}
-      />
-      <CurrencyField
-        value={formState.currency}
-        onChange={handleCurrencyChange}
-        error={formState.currencyError}
-      />
-      <AmountField
-        value={formState.amount}
-        onChange={handleAmountChange}
-        error={formState.amountError}
-        disabled={formState.isLoading}
-      />
-      <Button
-        width="full"
-        colorPalette="cyan"
-        onClick={handleTransfer}
-        spinner={<BeatLoader size={8} color="white" />}
-        loading={formState.isLoading}
-      >
-        Transferir
-      </Button>
+    <form onSubmit={(e) => { e.preventDefault(); handleTransfer(); }}>
+      <Flex direction="column" gap={4}>
+        <EmailField
+          value={formState.recipientEmail}
+          onChange={handleEmailChange}
+          error={formState.emailError}
+        />
+        <CurrencyField
+          value={formState.currency}
+          onChange={handleCurrencyChange}
+          error={formState.currencyError}
+        />
+        <AmountField
+          value={formState.amount}
+          onChange={handleAmountChange}
+          error={formState.amountError}
+          disabled={formState.isLoading}
+        />
+        <Button
+          type="submit"
+          width="100%"
+          backgroundColor="#1E40AF"
+          marginTop="6"
+          color={{ base: 'white', _dark: 'white' }}
+          textTransform="uppercase"
+          size="lg"
+          height="48px"
+          loading={formState.isLoading}
+          loadingText="TRANSFERINDO..."
+          disabled={!!formState.emailError || !!formState.currencyError || !!formState.amountError || formState.isLoading}
+          _hover={{ backgroundColor: '#153082' }}
+          _disabled={{ opacity: 0.7, cursor: 'not-allowed' }}
+        >
+          TRANSFERIR
+        </Button>
+      </Flex>
       <Toaster />
-    </>
+    </form>
   )
 }

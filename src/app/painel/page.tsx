@@ -56,7 +56,9 @@ export default function DashboardPage() {
         },
       });
 
-      if (!response.ok) throw new Error("Falha ao carregar os saldos");
+      if (!response.ok) {
+        throw await response.json();
+      }
 
       const data: Wallet[] = await response.json();
       const opCoinWallet = data.find((w) => w.coin.symbol === "OPCOIN");
@@ -67,11 +69,13 @@ export default function DashboardPage() {
       dispatch(setBrlCoins(brlWallet?.balance || 0));
       setWallets(data);
     } catch (error) {
-      void error;
+      const message = (typeof error === 'object' && error !== null && 'message' in error) 
+      ? error.message 
+      : "Falha ao carregar os saldos";
       // Exibe mensagem de erro em caso de falha
       toaster.create({
         title: "Erro",
-        description: "Falha ao carregar os saldos",
+        description: message,
         type: "error",
         duration: 5000,
         closable: true,
@@ -94,15 +98,19 @@ export default function DashboardPage() {
         },
       });
 
-      if (!response.ok) throw new Error("Falha ao carregar as transações");
+      if (!response.ok) {
+        throw await response.json();
+      }
       const data = await response.json();
       dispatch(setTransactions(data));
     } catch (error) {
-      void error;
+       const message = (typeof error === 'object' && error !== null && 'message' in error) 
+      ? error.message 
+      : "Falha ao carregar as transações";
       // Exibe mensagem de erro em caso de falha
       toaster.create({
         title: "Erro",
-        description: "Falha ao carregar as transações",
+        description: message,
         type: "error",
         duration: 5000,
         closable: true,

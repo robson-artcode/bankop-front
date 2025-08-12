@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Button, Field, Input, Text, Box } from '@chakra-ui/react'
-import { BeatLoader } from 'react-spinners'
 import { Toaster, toaster } from '@/components/ui/toaster'
 import { useDispatch, useSelector } from 'react-redux'
 import { setBrlCoins, setOpCoins } from '../../../store/conversionSlice'
@@ -125,7 +124,8 @@ const BalanceDisplay = ({ opCoinsInput }: { opCoinsInput: string }) => {
  * Modal para conversão de OpCoins em BRL
  * 
  * Gerencia todo o processo de conversão de moedas virtuais,
- * incluindo validação, requisição à API e atualização do estado global
+ * incluindo validação, requisição à API, atualização do estado global
+ * e suporte a submissão via Enter.
  * 
  * @param onClose - Função para fechar o modal
  * @returns Componente de modal de conversão
@@ -209,30 +209,37 @@ export function ConversionModal({ onClose }: ConversionModalProps) {
 
   return (
     <Box>
-      {/* Campo para entrada de OpCoins */}
-      <OpCoinsField
-        value={formState.opCoinsInput}
-        onChange={handleInputChange}
-        error={formState.amountError}
-        disabled={formState.isLoading}
-      />
-      
-      {/* Visualização do saldo convertido */}
-      <BalanceDisplay opCoinsInput={formState.opCoinsInput} />
-      
-      {/* Botão de conversão */}
-      <Button
-        width="full"
-        mt={4}
-        colorScheme="blue"
-        onClick={handleConvert}
-        loading={formState.isLoading}
-        loadingText="Convertendo..."
-        spinner={<BeatLoader size={8} color="white" />}
-        disabled={!formState.opCoinsInput || formState.isLoading || !!formState.amountError}
-      >
-        Converter
-      </Button>
+      <form onSubmit={(e) => { e.preventDefault(); handleConvert(); }}>
+        {/* Campo para entrada de OpCoins */}
+        <OpCoinsField
+          value={formState.opCoinsInput}
+          onChange={handleInputChange}
+          error={formState.amountError}
+          disabled={formState.isLoading}
+        />
+        
+        {/* Visualização do saldo convertido */}
+        <BalanceDisplay opCoinsInput={formState.opCoinsInput} />
+        
+        {/* Botão de conversão */}
+        <Button
+          type="submit"
+          width="100%"
+          backgroundColor="#1E40AF"
+          marginTop="6"
+          color={{ base: 'white', _dark: 'white' }}
+          textTransform="uppercase"
+          size="lg"
+          height="48px"
+          loading={formState.isLoading}
+          loadingText="CONVERTENDO..."
+          disabled={!formState.opCoinsInput || formState.isLoading || !!formState.amountError}
+          _hover={{ backgroundColor: '#153082' }}
+          _disabled={{ opacity: 0.7, cursor: 'not-allowed' }}
+        >
+          CONVERTER
+        </Button>
+      </form>
       
       {/* Componente para exibição de notificações */}
       <Toaster />
