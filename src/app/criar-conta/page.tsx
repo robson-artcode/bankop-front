@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Input, Button, ButtonGroup, Heading, Box, Stack, Field } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { Toaster, toaster } from '@/components/ui/toaster'
 import { useRouter } from 'next/navigation'
-import { PasswordInput } from '@/components/ui/password-input'
 import { ThemeToggle } from '../../components/ThemeToggle'
+import { RegisterForm } from './components/RegisterForm'
 import styles from '../page.module.css'
 
 interface FormState {
@@ -52,109 +52,6 @@ const validateField = (
 }
 
 /**
- * Componente para campo de nome completo
- * 
- * @param value - Valor atual do campo
- * @param onChange - Função chamada ao alterar o valor
- * @param onBlur - Função chamada ao sair do campo
- * @param error - Mensagem de erro (se houver)
- * @returns Componente de campo de entrada
- */
-const NameField = ({
-  value,
-  onChange,
-  onBlur,
-  error
-}: {
-  value: string
-  onChange: (value: string) => void
-  onBlur: () => void
-  error: string
-}) => (
-  <Field.Root required invalid={!!error}>
-    <Field.Label>Nome completo</Field.Label>
-    <Input
-      placeholder="Nome completo"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
-      className={styles.formInput}
-      size="lg"
-    />
-    {error && <Field.ErrorText>{error}</Field.ErrorText>}
-  </Field.Root>
-)
-
-/**
- * Componente para campo de e-mail
- * 
- * @param value - Valor atual do campo
- * @param onChange - Função chamada ao alterar o valor
- * @param onBlur - Função chamada ao sair do campo
- * @param error - Mensagem de erro (se houver)
- * @returns Componente de campo de entrada
- */
-const EmailField = ({
-  value,
-  onChange,
-  onBlur,
-  error
-}: {
-  value: string
-  onChange: (value: string) => void
-  onBlur: () => void
-  error: string
-}) => (
-  <Field.Root required invalid={!!error}>
-    <Field.Label>E-mail</Field.Label>
-    <Input
-      placeholder="E-mail"
-      type="email"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
-      className={styles.formInput}
-      size="lg"
-    />
-    {error && <Field.ErrorText>{error}</Field.ErrorText>}
-  </Field.Root>
-)
-
-/**
- * Componente para campo de senha
- * 
- * @param value - Valor atual do campo
- * @param onChange - Função chamada ao alterar o valor
- * @param onBlur - Função chamada ao sair do campo
- * @param error - Mensagem de erro (se houver)
- * @returns Componente de campo de entrada
- */
-const PasswordField = ({
-  value,
-  onChange,
-  onBlur,
-  error
-}: {
-  value: string
-  onChange: (value: string) => void
-  onBlur: () => void
-  error: string
-}) => (
-  <Field.Root required invalid={!!error}>
-    <Field.Label>Senha</Field.Label>
-    <PasswordInput
-      placeholder="Senha"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
-      className={styles.formInput}
-      size="lg"
-    />
-    {error && <Field.ErrorText>{error}</Field.ErrorText>}
-  </Field.Root>
-)
-
-/**
  * Página de registro de novos usuários
  * 
  * Gerencia todo o processo de criação de conta, incluindo:
@@ -181,6 +78,7 @@ export default function RegisterPage() {
       password: false
     }
   })
+  const [isLoading, setIsLoading] = useState(false) // Estado para controlar o loading do botão
 
   /**
    * Efeito para verificar autenticação ao carregar a página
@@ -292,6 +190,8 @@ export default function RegisterPage() {
     // Não prossegue se houver erros
     if (nameError || emailError || passwordError) return
 
+    setIsLoading(true) // Ativa o estado de loading
+
     try {
       // Requisição para API de registro
       const response = await fetch(`${API_URL}/auth/register`, {
@@ -335,6 +235,8 @@ export default function RegisterPage() {
         type: 'error',
         closable: true
       })
+    } finally {
+      setIsLoading(false) // Desativa o estado de loading
     }
   }
 
@@ -345,58 +247,35 @@ export default function RegisterPage() {
     <Box
       className={styles.page}
       display="flex"
+      flexDirection="column"
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
       padding="2rem"
     >
-      <Box className={styles.main} width="100%" maxWidth="400px">
-        <Stack direction="column" gap={6} width="100%">
-          <Heading size="2xl" textAlign="center" marginBottom={6}>
-            Crie sua conta em alguns segundos
-          </Heading>
-          
-          <Stack direction="column" gap={4} width="100%">
-            {/* Campo de nome completo */}
-            <NameField
-              value={formState.fullName}
-              onChange={(value) => handleInputChange('fullName', value)}
-              onBlur={() => handleBlur('fullName')}
-              error={formState.nameError}
-            />
-            
-            {/* Campo de e-mail */}
-            <EmailField
-              value={formState.email}
-              onChange={(value) => handleInputChange('email', value)}
-              onBlur={() => handleBlur('email')}
-              error={formState.emailError}
-            />
-            
-            {/* Campo de senha */}
-            <PasswordField
-              value={formState.password}
-              onChange={(value) => handleInputChange('password', value)}
-              onBlur={() => handleBlur('password')}
-              error={formState.passwordError}
-            />
-          </Stack>
-          
-          {/* Botão de registro */}
-          <ButtonGroup size="xl" width="100%" className={styles.formButtonGroup}>
-            <Button
-              width="100%"
-              className={styles.submitButton}
-              backgroundColor="#1E40AF"
-              onClick={handleRegister}
-              size="lg"
-              height="48px"
-              disabled={!!formState.nameError || !!formState.emailError || !!formState.passwordError}
-            >
-              CRIAR CONTA
-            </Button>
-          </ButtonGroup>
-        </Stack>
+      <Box
+        className={styles.main}
+        width="100%"
+        maxWidth="400px"
+        display="flex"
+        flexDirection="column"
+      >
+        <RegisterForm
+          fullName={formState.fullName}
+          email={formState.email}
+          password={formState.password}
+          nameError={formState.nameError}
+          emailError={formState.emailError}
+          passwordError={formState.passwordError}
+          onFullNameChange={(value) => handleInputChange('fullName', value)}
+          onEmailChange={(value) => handleInputChange('email', value)}
+          onPasswordChange={(value) => handleInputChange('password', value)}
+          onFullNameBlur={() => handleBlur('fullName')}
+          onEmailBlur={() => handleBlur('email')}
+          onPasswordBlur={() => handleBlur('password')}
+          onSubmit={handleRegister}
+          isLoading={isLoading}
+        />
       </Box>
       
       {/* Componentes globais */}
