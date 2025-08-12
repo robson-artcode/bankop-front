@@ -12,6 +12,7 @@ A solução foi desenvolvida com **Next.js + Redux Toolkit** no front-end e **Ne
 - Conversão de pontos para outras moedas (`/wallets/convert`)
 - Transferência de valores entre usuários (`/wallets/transfer`)
 - Histórico de transações (`/transactions`)
+- Perfil de investidor (`/users/profile`)
 - Interface responsiva com **Chakra UI**
 - Estado global com **Redux Toolkit**
 
@@ -121,6 +122,7 @@ Transferência: Envie OpCoins ou Reais para outros usuários.
 
 Histórico: Veja todas as transações feitas e recebidas.
 
+Perfil de Investidor: Gerencie seu perfil de investidor
 
 
 
