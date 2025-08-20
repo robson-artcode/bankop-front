@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
-import { Toaster, toaster } from '@/components/ui/toaster'
+import { toaster } from '@/components/ui/toaster'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '../../components/ThemeToggle'
 import { RegisterForm } from './components/RegisterForm'
@@ -91,6 +91,7 @@ export default function RegisterPage() {
         router.push('/painel')
       } else {
         setFormState((prev) => ({ ...prev, authStatus: 'unauthorized' }))
+        router.push('/')
       }
     }
     checkAuthorization()
@@ -246,6 +247,7 @@ export default function RegisterPage() {
     }
   }
 
+
   // Não renderiza nada enquanto verifica autenticação
   if (formState.authStatus === 'loading') return null
 
@@ -285,7 +287,6 @@ export default function RegisterPage() {
       </Box>
       
       {/* Componentes globais */}
-      <Toaster />
       <ThemeToggle />
     </Box>
   )

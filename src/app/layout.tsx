@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "./providers";
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: "BankOp - Seu banco de Operações e Pontos",
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased bg-gray-50 text-gray-900">
         <AppProviders>
           {children}
+          <Toaster/>
         </AppProviders>
       </body>
     </html>

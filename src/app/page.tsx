@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Box, Flex, useBreakpointValue, Field, Input, Button } from '@chakra-ui/react'
-import { Toaster, toaster } from '../components/ui/toaster'
+import { toaster } from '../components/ui/toaster'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { PasswordInput } from '../components/ui/password-input'
@@ -249,30 +249,80 @@ export default function HomePage() {
 
   // Verifica autenticação ao carregar a página
   useEffect(() => {
-    const checkAuthorization = () => {
-      const token = localStorage.getItem('access_token')
-      if (token) {
-        router.push('/painel')
-      } else {
-        setFormState((prev) => ({ ...prev, authStatus: 'unauthorized' }))
+    const checkAuthorization = async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        setFormState((prev) => ({ ...prev, authStatus: "unauthorized" }));
+        return;
       }
-    }
-    checkAuthorization()
-  }, [router])
+
+      try {
+        const response = await fetch(`${API_URL}/auth/token-validate`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          toaster.create({
+            title: "Token inválido",
+            description: "Faça o login novamente para renovar suas credenciais.",
+            type: "error",
+            duration: 5000,
+            closable: true,
+          });
+
+          localStorage.removeItem("access_token");
+          setFormState((prev) => ({ ...prev, authStatus: "unauthorized" }));
+          return;
+        }
+
+        if (!response.ok) {
+          // outros erros do servidor (500, 503, etc.)
+          toaster.create({
+            title: "Erro de autenticação",
+            description: "Ocorreu um problema ao validar sua sessão.",
+            type: "error",
+          });
+          localStorage.removeItem("access_token");
+          setFormState((prev) => ({ ...prev, authStatus: "unauthorized" }));
+          return;
+        }
+
+        router.replace("/painel");
+      } catch (error) {
+        localStorage.removeItem("access_token");
+      }
+    };
+
+    checkAuthorization();
+  }, [router]);
+
 
   // Exibe notificações salvas no localStorage
   useEffect(() => {
-    const storedToastData = localStorage.getItem('toast')
-    if (storedToastData) {
-      const parsedToastData = JSON.parse(storedToastData)
-      toaster.create({
-        ...parsedToastData,
-        closable: true,
-        duration: 5000
-      })
-      localStorage.removeItem('toast')
+    // garante que roda no client
+    if (typeof window !== "undefined") {
+      const toastRaw = localStorage.getItem("toast");
+      if (toastRaw) {
+        const toast = JSON.parse(toastRaw);
+        localStorage.removeItem("toast");
+
+        // garante que o toaster roda depois do mount
+        setTimeout(() => {
+          toaster.create({
+            title: toast.title || "Notificação",
+            description: toast.description,
+            type: toast.type,
+            closable: true,
+            duration: 5000,
+          });
+        }, 0);
+      }
     }
-  }, [])
+  }, []);
 
   /**
    * Atualiza valores dos campos do formulário
@@ -417,7 +467,6 @@ export default function HomePage() {
         </Box>
       </Flex>
 
-      <Toaster />
       <ThemeToggle />
     </Box>
   )

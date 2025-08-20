@@ -2,7 +2,7 @@
 
 import { Grid, GridItem, Skeleton, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 import { useEffect, useState, useCallback } from "react";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { Logout } from "./components/Logout";
@@ -171,6 +171,29 @@ export default function DashboardPage() {
         return;
       }
 
+      const response = await fetch(`${API_URL}/auth/token-validate`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        // Configura mensagem de token inválido para exibir após redirecionamento
+        localStorage.setItem(
+          'toast',
+          JSON.stringify({
+            title: "Sessão expirada",
+            description: "Faça o login novamente para renovar suas credenciais.",
+            type: "error"
+          })
+        )
+        localStorage.removeItem("access_token");
+        router.push("/");
+        return;
+      }
+
       setIsAuthenticated(true);
       setIsLoading(true);
       try {
@@ -246,7 +269,6 @@ export default function DashboardPage() {
       )}
 
       {/* Componentes globais */}
-      <Toaster />
       <ThemeToggle />
       <Logout />
       <OverlayManager.Viewport />
