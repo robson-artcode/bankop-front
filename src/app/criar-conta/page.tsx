@@ -91,7 +91,6 @@ export default function RegisterPage() {
         router.push('/painel')
       } else {
         setFormState((prev) => ({ ...prev, authStatus: 'unauthorized' }))
-        router.push('/')
       }
     }
     checkAuthorization()
