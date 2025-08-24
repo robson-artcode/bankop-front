@@ -10,18 +10,18 @@ import { RootState } from '../../../store'
 import { FormatNumber } from '@chakra-ui/react'
 
 interface ConversionModalProps {
-  onClose: () => void // Função para fechar o modal
+  onClose: () => void 
 }
 
 interface FormState {
-  opCoinsInput: string // Valor digitado pelo usuário para conversão
-  isLoading: boolean // Estado de carregamento durante a conversão
-  amountError: string // Mensagem de erro para o valor
+  opCoinsInput: string 
+  isLoading: boolean 
+  amountError: string
 }
 
 interface ValidationResult {
-  isValid: boolean // Indica se o valor é válido
-  amountError: string // Mensagem de erro detalhada
+  isValid: boolean 
+  amountError: string 
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string

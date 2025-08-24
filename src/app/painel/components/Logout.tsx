@@ -24,13 +24,9 @@ import { useRouter } from 'next/navigation'
  * @returns JSX.Element
  */
 export function Logout() {
-  // Controle do estado do modal
+
   const { open, onOpen, onClose } = useDisclosure()
-  
-  // Referência para o botão de cancelar (acessibilidade)
   const cancelRef = useRef<HTMLButtonElement>(null)
-  
-  // Router para navegação
   const router = useRouter()
 
   /**
@@ -58,7 +54,7 @@ export function Logout() {
           aria-label="Logout"
           size="lg"
           _hover={{
-            bg: 'red.50', // Efeito hover sutil
+            bg: 'red.50',
           }}
         >
           <LuLogOut size="24" />
@@ -71,20 +67,20 @@ export function Logout() {
         onOpenChange={(details) => {
           if (!details.open) onClose()
         }}
-        role="alertdialog"  // ARIA role para dialogs de alerta
-        placement="center"  // Centraliza o modal na tela
+        role="alertdialog"
+        placement="center" 
       >
         {/* Fundo escuro do modal */}
         <DialogBackdrop />
         
         {/* Conteúdo principal do modal */}
         <DialogContent
-          maxWidth={{ base: '90vw', md: '400px' }}  // Responsividade
+          maxWidth={{ base: '90vw', md: '400px' }}
           maxHeight={{ base: '80vh', md: 'auto' }}
           position="fixed"
           top="50%"
           left="50%"
-          transform="translate(-50%, -50%)"  // Centralização perfeita
+          transform="translate(-50%, -50%)"
           margin="0"
         >
           {/* Cabeçalho do modal */}
@@ -107,7 +103,7 @@ export function Logout() {
             <Button 
               colorScheme="red" 
               onClick={handleLogout} 
-              ml={3}  // Margem à esquerda
+              ml={3} 
             >
               Sair
             </Button>

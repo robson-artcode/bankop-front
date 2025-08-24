@@ -9,22 +9,22 @@ import { RegisterForm } from './components/RegisterForm'
 import styles from '../page.module.css'
 
 interface FormState {
-  fullName: string // Nome completo do usuário
-  email: string // E-mail do usuário
-  password: string // Senha do usuário
-  nameError: string // Erro de validação do nome
-  emailError: string // Erro de validação do e-mail
-  passwordError: string // Erro de validação da senha
-  authStatus: 'loading' | 'unauthorized' | 'authorized' // Estado de autenticação
+  fullName: string 
+  email: string 
+  password: string 
+  nameError: string 
+  emailError: string 
+  passwordError: string 
+  authStatus: 'loading' | 'unauthorized' | 'authorized'
   touched: {
-    fullName: boolean // Se o campo nome foi tocado
-    email: boolean // Se o campo e-mail foi tocado
-    password: boolean // Se o campo senha foi tocado
+    fullName: boolean
+    email: boolean
+    password: boolean
   }
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Regex para validar e-mail
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ 
 const DEBOUNCE_DELAY = 500 // Tempo de debounce para validação (ms)
 
 /**

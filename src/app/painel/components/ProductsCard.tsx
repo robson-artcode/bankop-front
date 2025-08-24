@@ -34,7 +34,7 @@ export const ProductsCard = () => (
         >
           <Card.Header>
             <Icon size="xl">
-              <LuArrowRightLeft /> {/* Ícone ilustrativo */}
+              <LuArrowRightLeft /> 
             </Icon>
           </Card.Header>
           <Card.Body>
@@ -56,7 +56,7 @@ export const ProductsCard = () => (
         >
           <Card.Header>
             <Icon size="xl">
-              <LuCircleArrowRight /> {/* Ícone ilustrativo */}
+              <LuCircleArrowRight />
             </Icon>
           </Card.Header>
           <Card.Body>

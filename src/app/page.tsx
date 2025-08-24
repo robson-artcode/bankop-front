@@ -11,15 +11,15 @@ import { LogoHeader } from './components/LogoHeader'
 import styles from './page.module.css'
 
 interface FormState {
-  email: string // Valor do campo e-mail
-  password: string // Valor do campo senha
-  emailError: string // Mensagem de erro para e-mail
-  passwordError: string // Mensagem de erro para senha
-  isLoading: boolean // Estado de carregamento
-  authStatus: 'loading' | 'unauthorized' | 'authorized' | null // Status de autenticação
+  email: string
+  password: string 
+  emailError: string 
+  passwordError: string
+  isLoading: boolean
+  authStatus: 'loading' | 'unauthorized' | 'authorized' | null
   touched: {
-    email: boolean // Se o campo e-mail foi interagido
-    password: boolean // Se o campo senha foi interagido
+    email: boolean
+    password: boolean
   }
 }
 

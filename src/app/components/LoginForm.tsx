@@ -6,12 +6,12 @@ import { FormEvent } from "react";
 import styles from "../page.module.css";
 
 interface LoginFormProps {
-  email: string; // Valor atual do campo e-mail
-  password: string; // Valor atual do campo senha
-  onEmailChange: (value: string) => void; // Handler para mudança no e-mail
-  onPasswordChange: (value: string) => void; // Handler para mudança na senha
-  onSubmit: (e?: FormEvent) => void; // Handler para submissão do formulário
-  isLoading?: boolean; // Indica se o login está em processamento
+  email: string;
+  password: string;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  onSubmit: (e?: FormEvent) => void; 
+  isLoading?: boolean; 
 }
 
 /**
@@ -56,8 +56,8 @@ export const LoginForm = ({
           className={styles.inputField}
           size="lg"
           type="email"
-          required // Validação HTML5
-          autoComplete="username" // Auxilia preenchimento automático
+          required 
+          autoComplete="username" 
         />
       </Box>
 
@@ -78,8 +78,8 @@ export const LoginForm = ({
           onChange={(e) => onPasswordChange(e.target.value)}
           className={styles.inputField}
           size="lg"
-          required // Validação HTML5
-          autoComplete="current-password" // Auxilia preenchimento automático
+          required 
+          autoComplete="current-password"
         />
       </Box>
 
@@ -94,7 +94,7 @@ export const LoginForm = ({
           loadingText="Entrando..."
           size="lg"
           _hover={{
-            bgColor: "#153082" // Efeito hover
+            bgColor: "#153082"
           }}
           _disabled={{
             opacity: 0.7,

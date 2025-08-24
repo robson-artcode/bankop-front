@@ -9,29 +9,29 @@ import { setNewTransactions } from '../../../store/transactionSlice'
 import { RootState } from '../../../store'
 
 interface TransferModalProps {
-  onClose: () => void // Função para fechar o modal
+  onClose: () => void
 }
 
 interface FormState {
-  recipientEmail: string // E-mail do destinatário
-  amount: number // Quantidade a transferir
-  currency: string[] // Moeda selecionada
-  isLoading: boolean // Estado de carregamento
-  emailError: string // Mensagem de erro para e-mail
-  currencyError: string // Mensagem de erro para moeda
-  amountError: string // Mensagem de erro para quantidade
-  currentUserEmail: string // E-mail do usuário atual
+  recipientEmail: string 
+  amount: number
+  currency: string[]
+  isLoading: boolean
+  emailError: string 
+  currencyError: string 
+  amountError: string 
+  currentUserEmail: string
 }
 
 interface ValidationResult {
-  isValid: boolean // Indica se o formulário é válido
-  emailError: string // Mensagem de erro para e-mail
-  currencyError: string // Mensagem de erro para moeda
-  amountError: string // Mensagem de erro para quantidade
+  isValid: boolean
+  emailError: string 
+  currencyError: string 
+  amountError: string
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Regex para validação de e-mail
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const CURRENCIES = createListCollection({
   items: [
     { label: "Op Coin", value: "OPCOIN" },

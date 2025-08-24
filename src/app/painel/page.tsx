@@ -35,9 +35,9 @@ export default function DashboardPage() {
   const dispatch = useDispatch();
 
   // Estados locais
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Estado de autenticação
-  const [wallets, setWallets] = useState<Wallet[]>([]); // Lista de carteiras do usuário
-  const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); 
+  const [wallets, setWallets] = useState<Wallet[]>([]); 
+  const [isLoading, setIsLoading] = useState(true);
 
   // Estados do Redux
   const opCoinBalance = useSelector((state: RootState) => state.conversion.opCoins); // Saldo em OP Coin
@@ -75,7 +75,7 @@ export default function DashboardPage() {
       const message = (typeof error === 'object' && error !== null && 'message' in error) 
       ? error.message 
       : "Falha ao carregar os saldos";
-      // Exibe mensagem de erro em caso de falha
+  
       toaster.create({
         title: "Erro",
         description: message,

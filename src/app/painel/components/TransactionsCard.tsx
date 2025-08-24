@@ -7,8 +7,8 @@ import { Transaction } from "../types";
 import { formatCustomDate } from "../../utils/date";
 
 interface TransactionsCardProps {
-  isLoading: boolean; // Indica se os dados estão sendo carregados
-  transactions: Transaction[]; // Lista de transações a serem exibidas
+  isLoading: boolean; 
+  transactions: Transaction[];
 }
 
 /**
@@ -26,20 +26,20 @@ export const TransactionsCard = ({ isLoading, transactions }: TransactionsCardPr
     <Card.Body>
       {/* Container com scroll personalizado */}
       <Box
-        maxH="300px" // Altura máxima antes de aparecer scroll
-        overflowY="auto" // Habilita scroll vertical
+        maxH="300px" 
+        overflowY="auto" 
         css={{
-          "&::-webkit-scrollbar": { width: "4px" }, // Largura da barra de scroll
-          "&::-webkit-scrollbar-track": { width: "6px" }, // Track do scroll
+          "&::-webkit-scrollbar": { width: "4px" }, 
+          "&::-webkit-scrollbar-track": { width: "6px" }, 
           "&::-webkit-scrollbar-thumb": { 
-            background: "#3182CE", // Cor do thumb
-            borderRadius: "24px" // Borda arredondada
+            background: "#3182CE",
+            borderRadius: "24px"
           },
         }}
       >
         <Timeline.Root>
           {isLoading ? (
-            <LoadingSkeleton /> // Exibe esqueleto durante carregamento
+            <LoadingSkeleton /> 
           ) : transactions.length > 0 ? (
             transactions.map((transaction) => (
               <TransactionItem key={transaction.id} transaction={transaction} />
@@ -64,8 +64,8 @@ const LoadingSkeleton = () => (
   <Grid templateColumns="repeat(2, 1fr)" gap={6}>
     {[...Array(4)].map((_, idx) => (
       <GridItem key={idx}>
-        <Skeleton height="20px" mb="4" /> {/* Linha 1 do esqueleto */}
-        <Skeleton height="20px" width="80%" /> {/* Linha 2 do esqueleto */}
+        <Skeleton height="20px" mb="4" />
+        <Skeleton height="20px" width="80%" />
       </GridItem>
     ))}
   </Grid>

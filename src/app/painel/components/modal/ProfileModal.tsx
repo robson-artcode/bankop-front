@@ -8,14 +8,14 @@ import { setProfile } from '../../../store/profileSlice'
 import { Toaster, toaster } from "@/components/ui/toaster"
 
 interface FormState {
-    profile: string[] // Perfil selecionado no formulário
-    profileError: string // Mensagem de erro de validação do perfil
-    isLoading: boolean // Indica estado de carregamento da submissão
+    profile: string[]
+    profileError: string
+    isLoading: boolean
 }
 
 interface ValidationResult {
-    isValid: boolean // Indica se o formulário é válido
-    profileError: string // Mensagem de erro caso inválido
+    isValid: boolean
+    profileError: string
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL as string

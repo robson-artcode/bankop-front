@@ -6,9 +6,9 @@ import styles from "../../page.module.css";
 import { Wallet } from "../types";
 
 interface WalletCardProps {
-  wallets: Wallet[]; // Array de carteiras do usuário
-  brlCoinBalance: number; // Saldo em Real Brasileiro
-  opCoinBalance: number; // Saldo em Op Coin
+  wallets: Wallet[];
+  brlCoinBalance: number;
+  opCoinBalance: number; 
 }
 
 /**

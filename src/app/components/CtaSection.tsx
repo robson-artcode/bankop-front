@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Heading, Stack } from "@chakra-ui/react";
 import styles from "../page.module.css";
 
 interface CtaSectionProps {
-  onSignUp: () => void; // Função chamada quando o usuário clica no botão de cadastro
+  onSignUp: () => void;
 }
 
 /**
@@ -35,15 +35,14 @@ export const CtaSection = ({ onSignUp }: CtaSectionProps) => (
 
     {/* Container do botão principal */}
     <ButtonGroup size="xl" width="100%">
-      {/* Botão de ação principal com estilização destacada */}
       <Button
         width="100%"
-        bgColor="#1E40AF" // Cor azul primária da marca
-        color="white" // Texto em branco para contraste
+        bgColor="#1E40AF"
+        color="white"
         onClick={onSignUp}
-        size="lg" // Tamanho grande para melhor visibilidade
+        size="lg"
         _hover={{
-          bgColor: "#1E3A8A" // Efeito hover com tom mais escuro
+          bgColor: "#1E3A8A"
         }}
       >
         CRIAR MINHA CONTA

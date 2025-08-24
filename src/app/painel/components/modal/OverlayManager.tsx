@@ -3,9 +3,9 @@
 import { Dialog, Portal, createOverlay } from "@chakra-ui/react"
 
 interface DialogProps {
-  title: string // Título do diálogo modal
-  description?: string // Descrição opcional do diálogo
-  content?: React.ReactNode // Conteúdo adicional personalizado
+  title: string 
+  description?: string 
+  content?: React.ReactNode 
 }
 
 /**
